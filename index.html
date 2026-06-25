@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plumb — Builder Field App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16191F;          /* graphite - structural / dark UI */
+    --ink-soft:#1E222B;
+    --slate:#3C4350;        /* secondary text */
+    --mute:#8A909B;         /* tertiary */
+    --concrete:#ECEDEF;     /* app background */
+    --card:#FFFFFF;         /* card surface */
+    --line:#E2E4E8;         /* hairlines */
+    --brass:#B5852F;        /* BRAND accent */
+    --brass-deep:#956A1F;
+    --brass-soft:#F6EEDD;
+    --steel:#2C5C84;        /* secondary / links / sent */
+    --steel-soft:#E5EDF4;
+    --green:#2F8F5B;
+    --green-soft:#E6F3EB;
+    --amber:#C0871B;
+    --amber-soft:#FBF0D6;
+    --red:#C24A3C;
+    --red-soft:#FBE9E7;
+    --shadow:0 2px 10px rgba(22,25,31,.07), 0 1px 2px rgba(22,25,31,.05);
+    --shell:#16191F;        /* dark chrome: headers, login, dark buttons, avatar */
+    --on-accent:#16191F;    /* text that sits on brass — stays dark in both modes */
+  }
+  .phone.dark{
+    --concrete:#13161B;     /* app bg */
+    --card:#1E232C;         /* surfaces */
+    --line:#2C323D;
+    --ink:#ECEEF2;          /* primary text (now light) */
+    --slate:#A6AEBA;
+    --mute:#69707B;
+    --shell:#0E1116;        /* chrome slightly darker than cards */
+    --brass-soft:#33291259; --steel-soft:#1C2A3759; --green-soft:#16291E59;
+    --amber-soft:#2E230F59; --red-soft:#2E15124D;
+    --shadow:0 2px 10px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
+  }
+  /* dark-mode fixes for hardcoded light surfaces */
+  .phone.dark .input,.phone.dark .photoadd,.phone.dark .preset,.phone.dark .pickrow,
+  .phone.dark .vcontactbar a,.phone.dark .sendopt button,.phone.dark .phaserow .pbtn,
+  .phone.dark .check,.phone.dark .switch button.on{background:var(--card);}
+  .phone.dark .switch{background:#272D37;}
+  .phone.dark .track .seg,.phone.dark .meter{background:#2C323D;}
+  .phone.dark .vsearch input{background:var(--card);}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{
+    background:#23272F;font-family:'Inter',system-ui,sans-serif;color:var(--ink);
+    min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 12px;
+  }
+  .phone{
+    width:390px;max-width:100%;height:844px;max-height:92vh;background:var(--concrete);
+    border-radius:42px;box-shadow:0 0 0 12px #0C0E12, 0 30px 60px rgba(0,0,0,.45);
+    overflow:hidden;position:relative;display:flex;flex-direction:column;
+  }
+  .statusbar{
+    height:46px;flex:0 0 46px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 26px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--ink);background:var(--concrete);
+  }
+  .statusbar.dark{background:var(--shell);color:#fff;}
+  .statusbar .dots{display:flex;gap:4px;align-items:center;}
+  .statusbar .bar{width:3px;border-radius:2px;background:currentColor;}
+  .screen{flex:1;overflow-y:auto;display:none;flex-direction:column;}
+  .screen.active{display:flex;}
+  .screen::-webkit-scrollbar{display:none;}
+
+  /* ---------- LOGO / plumb bob ---------- */
+  .bob{display:inline-block;}
+  .wordmark{font-family:'Archivo';font-weight:900;letter-spacing:-.02em;}
+
+  /* ---------- LOGIN ---------- */
+  #login{background:var(--shell);align-items:center;justify-content:center;text-align:center;color:#fff;}
+  #login .glow{position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:340px;height:340px;
+    background:radial-gradient(circle,rgba(181,133,47,.28),transparent 70%);}
+  #login .logo-stack{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:22px;padding:0 36px;width:100%;}
+  #login .wordmark{font-size:46px;color:#fff;}
+  #login .tagline{font-family:'Space Mono';font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);}
+  #login .grain{font-size:13.5px;color:rgba(255,255,255,.55);line-height:1.5;max-width:260px;margin-top:-8px;}
+  #login .comm{font-family:'Space Mono';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:30px;}
+  #login .commbox{margin-top:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
+    border-radius:13px;padding:14px 16px;width:100%;display:flex;align-items:center;justify-content:space-between;}
+  #login .commbox .cn{font-weight:600;font-size:15px;}
+  #login .commbox .cr{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px;}
+  #login .enterbtn{margin-top:14px;width:100%;border:none;border-radius:14px;padding:17px;
+    background:var(--brass);color:var(--on-accent);font-family:'Archivo';font-weight:800;font-size:16px;cursor:pointer;
+    box-shadow:0 8px 22px rgba(181,133,47,.4);}
+
+  /* ---------- top app bar ---------- */
+  .appbar{padding:8px 20px 14px;background:var(--concrete);position:sticky;top:0;z-index:5;}
+  .brandrow{display:flex;align-items:center;justify-content:space-between;}
+  .brandrow .wordmark{font-size:20px;display:flex;align-items:center;gap:8px;}
+  .avatar{width:34px;height:34px;border-radius:50%;background:var(--shell);color:#fff;display:grid;place-items:center;
+    font-family:'Archivo';font-weight:700;font-size:13px;}
+  .appbar .eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--slate);display:flex;align-items:center;gap:7px;margin-top:14px;}
+  .appbar .eyebrow .pin{width:6px;height:6px;border-radius:50%;background:var(--brass);}
+  .appbar h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:26px;letter-spacing:-.01em;margin-top:3px;}
+
+  .switch{display:flex;margin-top:14px;background:#DFE1E5;border-radius:11px;padding:3px;}
+  .switch button{flex:1;border:none;background:transparent;font-family:'Inter';font-weight:600;font-size:12.5px;
+    color:var(--slate);padding:8px 0;border-radius:8px;cursor:pointer;transition:.15s;}
+  .switch button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow);}
+
+  .metrics{display:flex;gap:9px;padding:14px 20px 4px;}
+  .metric{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 12px;}
+  .metric .n{font-family:'Archivo';font-weight:800;font-size:23px;line-height:1;}
+  .metric .l{font-size:10.5px;color:var(--slate);margin-top:5px;line-height:1.25;}
+  .metric.alert .n{color:var(--red);}
+  .metric.soon .n{color:var(--steel);}
+
+  .listwrap{padding:16px 20px 90px;}
+  .section-label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--slate);margin:6px 2px 11px;}
+
+  /* ---------- HOME CARD (placard) ---------- */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+    margin-bottom:13px;overflow:hidden;cursor:pointer;display:flex;transition:transform .12s;}
+  .card:active{transform:scale(.985);}
+  .card .spine{width:7px;flex:0 0 7px;}
+  .card .body{flex:1;padding:14px 15px 13px;}
+  .card .row1{display:flex;justify-content:space-between;align-items:flex-start;}
+  .lotstamp{font-family:'Space Mono',monospace;font-weight:700;font-size:11px;color:var(--steel);
+    background:var(--steel-soft);border:1px solid #CFDDEA;padding:2px 7px;border-radius:5px;letter-spacing:.04em;}
+  .card h3{font-family:'Archivo';font-weight:700;font-size:16.5px;margin-top:9px;letter-spacing:-.01em;}
+  .card .owner{font-size:12.5px;color:var(--slate);margin-top:2px;}
+  .stagepill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;}
+  .stagepill .d{width:6px;height:6px;border-radius:50%;}
+  .track{display:flex;gap:3px;margin-top:13px;}
+  .track .seg{height:4px;flex:1;border-radius:2px;background:#E0E2E6;}
+  .track .seg.done{background:var(--steel);}
+  .track .seg.now{background:var(--brass);}
+  .card .foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+  .punchcount{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;}
+  .punchcount .badge{background:var(--red);color:#fff;font-family:'Space Mono';font-size:11px;font-weight:700;
+    min-width:20px;height:20px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px;}
+  .punchcount.clear .badge{background:var(--green);}
+  .nextmeet{font-size:11.5px;color:var(--slate);text-align:right;}
+  .nextmeet b{color:var(--ink);font-weight:600;display:block;font-size:12px;}
+
+  /* ---------- PIPELINE ---------- */
+  .pipe{padding:14px 0 90px;}
+  .pipecol{padding:0 20px 18px;}
+  .pipecol h4{font-family:'Archivo';font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+  .pipecol h4 .ct{font-family:'Space Mono';font-size:11px;color:var(--slate);font-weight:700;}
+  .pipecol h4 .d{width:8px;height:8px;border-radius:2px;}
+  .minicard{background:var(--card);border:1px solid var(--line);border-left-width:4px;border-radius:10px;
+    padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+  .minicard .mt{font-weight:600;font-size:13px;}
+  .minicard .ms{font-size:11px;color:var(--slate);margin-top:1px;}
+  .minicard .lot{font-family:'Space Mono';font-size:10.5px;color:var(--steel);font-weight:700;}
+
+  /* ---------- SCHEDULE ---------- */
+  .sched{padding:16px 20px 90px;}
+  .dayhdr{font-family:'Space Mono';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);margin:16px 2px 9px;}
+  .dayhdr:first-child{margin-top:2px;}
+  .meet{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px;margin-bottom:9px;display:flex;gap:13px;align-items:flex-start;}
+  .meet .time{font-family:'Space Mono';font-weight:700;font-size:12px;color:var(--steel);min-width:58px;padding-top:1px;}
+  .meet .mtitle{font-weight:600;font-size:14px;}
+  .meet .mwhere{font-size:12px;color:var(--slate);margin-top:2px;}
+  .meet .tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:20px;margin-top:7px;display:inline-block;}
+
+  /* ---------- TRADES ---------- */
+  .trades{padding:16px 20px 90px;}
+  .tradebar{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:10px;}
+  .tradebar .th{display:flex;justify-content:space-between;align-items:center;}
+  .tradebar .name{font-weight:600;font-size:14px;display:flex;align-items:center;gap:9px;}
+  .tradebar .name .ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:15px;}
+  .tradebar .open{font-family:'Space Mono';font-weight:700;font-size:14px;}
+  .meter{height:6px;border-radius:3px;background:#E5E7EB;margin-top:11px;overflow:hidden;}
+  .meter span{display:block;height:100%;border-radius:3px;}
+  .tradebar .who{font-size:11.5px;color:var(--slate);margin-top:8px;}
+
+  /* ---------- DETAIL ---------- */
+  .detailhead{background:var(--shell);color:#fff;padding:14px 20px 20px;}
+  .backrow{display:flex;align-items:center;justify-content:space-between;}
+  .iconbtn{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);
+    color:#fff;display:grid;place-items:center;cursor:pointer;font-size:17px;}
+  .detailhead .lotstamp{background:rgba(181,133,47,.16);border-color:rgba(181,133,47,.4);color:var(--brass);}
+  .detailhead h2{font-family:'Archivo';font-weight:800;font-size:23px;margin-top:13px;letter-spacing:-.01em;}
+  .detailhead .addr{font-size:13px;color:rgba(255,255,255,.6);margin-top:2px;}
+  .detailhead .stagebox{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;}
+  .detailhead .stagenow{font-family:'Archivo';font-weight:700;font-size:15px;color:var(--brass);}
+  .detailhead .stagenext{font-size:11.5px;color:rgba(255,255,255,.55);text-align:right;}
+  .dtrack{display:flex;gap:3px;margin-top:9px;}
+  .dtrack .seg{height:5px;flex:1;border-radius:2px;background:rgba(255,255,255,.16);}
+  .dtrack .seg.done{background:#5E89AE;}
+  .dtrack .seg.now{background:var(--brass);}
+
+  .tabbar{display:flex;background:var(--concrete);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:4;}
+  .tabbar button{flex:1;border:none;background:none;padding:13px 0;font-weight:600;font-size:13px;color:var(--slate);cursor:pointer;border-bottom:2.5px solid transparent;}
+  .tabbar button.on{color:var(--ink);border-bottom-color:var(--brass);}
+
+  .dpanel{display:none;padding:16px 20px 100px;}
+  .dpanel.on{display:block;}
+
+  .pgroup{margin-bottom:18px;}
+  .pgrouphdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;}
+  .pgrouphdr .lft{display:flex;align-items:center;gap:9px;}
+  .pgrouphdr .ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:15px;}
+  .pgrouphdr .tname{font-family:'Archivo';font-weight:700;font-size:15px;}
+  .pgrouphdr .assignee{font-size:11px;color:var(--slate);}
+  .sendbtn{font-size:11px;font-weight:700;color:var(--steel);background:var(--steel-soft);border:1px solid #CFDDEA;
+    padding:5px 10px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+  .pitem{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:8px;display:flex;gap:11px;align-items:flex-start;}
+  .pitem .ph{width:46px;height:46px;flex:0 0 46px;border-radius:8px;background:#DBDEE3;display:grid;place-items:center;font-size:18px;color:#9aa1ab;overflow:hidden;}
+  .pitem .loc{font-family:'Space Mono';font-size:10.5px;font-weight:700;letter-spacing:.04em;color:var(--steel);text-transform:uppercase;}
+  .pitem .desc{font-size:13px;margin-top:3px;line-height:1.35;}
+  .pitem .st{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:20px;margin-top:6px;display:inline-block;}
+
+  .inforow{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:10px;}
+  .inforow .k{font-family:'Space Mono';font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);}
+  .inforow .v{font-size:14.5px;font-weight:600;margin-top:4px;}
+  .inforow .v.link{color:var(--steel);}
+  .warrantybox{background:var(--green-soft);border:1px solid #CBE3D2;border-radius:12px;padding:13px 15px;margin-bottom:10px;}
+  .warrantybox .k{font-family:'Space Mono';font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--green);}
+
+  /* ---------- PUNCH LOGGING ---------- */
+  .loghead{background:var(--shell);color:#fff;padding:14px 20px 18px;}
+  .loghead h2{font-family:'Archivo';font-weight:800;font-size:22px;margin-top:11px;}
+  .logbody{padding:18px 20px 120px;}
+  .field{margin-bottom:15px;}
+  .field label{font-family:'Space Mono';font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--slate);display:block;margin-bottom:7px;}
+  .lockcard{background:var(--brass-soft);border:1.5px solid var(--brass);border-radius:13px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;}
+  .lockcard .lc-l{display:flex;align-items:center;gap:11px;}
+  .lockcard .ic{width:38px;height:38px;border-radius:10px;background:var(--brass);display:grid;place-items:center;font-size:18px;}
+  .lockcard .trade{font-family:'Archivo';font-weight:700;font-size:16px;}
+  .lockcard .person{font-size:12px;color:var(--slate);margin-top:1px;}
+  .lockcard .lock{font-size:11px;font-weight:700;color:var(--brass-deep);display:flex;align-items:center;gap:4px;}
+  .input{width:100%;border:1px solid var(--line);background:#fff;border-radius:11px;padding:13px 14px;font-size:14.5px;font-family:'Inter';}
+  .input::placeholder{color:#A6ADB6;}
+  textarea.input{resize:none;height:84px;}
+  .voicehint{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--slate);margin-top:8px;}
+  .voicehint .mic{width:24px;height:24px;border-radius:50%;background:var(--brass);display:grid;place-items:center;font-size:12px;}
+  .photoadd{border:1.5px dashed var(--line);border-radius:12px;height:74px;display:grid;place-items:center;color:var(--slate);font-size:13px;font-weight:500;background:#fff;}
+  .addedrow{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:10px 13px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+  .addedrow .al{font-family:'Space Mono';font-size:10px;font-weight:700;color:var(--steel);text-transform:uppercase;}
+  .addedrow .ad{font-size:13px;margin-top:2px;}
+
+  /* ---------- TRADESMAN ---------- */
+  .tradehead{background:var(--steel);color:#fff;padding:16px 20px 20px;}
+  .tradehead .eyebrow{font-family:'Space Mono';font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7);}
+  .tradehead h2{font-family:'Archivo';font-weight:800;font-size:23px;margin-top:5px;}
+  .tradehead .sub{font-size:13px;color:rgba(255,255,255,.78);margin-top:3px;}
+  .tradebody{padding:16px 20px 110px;}
+  .twork{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 15px;margin-bottom:10px;}
+  .twork .tw-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .twork .loc{font-family:'Space Mono';font-size:10.5px;font-weight:700;color:var(--steel);text-transform:uppercase;letter-spacing:.04em;}
+  .twork .desc{font-size:14px;margin-top:4px;line-height:1.35;}
+  .twork .home{font-size:11px;color:var(--slate);margin-top:7px;}
+  .check{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);background:#fff;cursor:pointer;display:grid;place-items:center;color:#fff;font-size:14px;transition:.15s;flex:0 0 26px;}
+  .twork.done{opacity:.55;}
+  .twork.done .check{background:var(--green);border-color:var(--green);}
+  .twork.done .desc{text-decoration:line-through;}
+
+  .footaction{position:absolute;bottom:0;left:0;right:0;padding:14px 20px 26px;
+    background:linear-gradient(to top, var(--concrete) 72%, rgba(236,237,239,0));}
+  .btn{width:100%;border:none;border-radius:14px;padding:16px;font-family:'Archivo';font-weight:700;font-size:15.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;}
+  .btn.primary{background:var(--brass);color:var(--on-accent);box-shadow:0 6px 16px rgba(181,133,47,.32);}
+  .btn.dark{background:var(--shell);color:#fff;}
+  .btn.steel{background:var(--steel);color:#fff;}
+  .btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink);}
+  .btnrow{display:flex;gap:10px;}
+  .btnrow .btn{flex:1;}
+
+  .fab{position:absolute;bottom:84px;right:20px;width:58px;height:58px;border-radius:18px;background:var(--brass);
+    box-shadow:0 8px 20px rgba(181,133,47,.42);border:none;color:var(--on-accent);font-size:28px;cursor:pointer;display:grid;place-items:center;z-index:6;}
+  .bottomnav{flex:0 0 64px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;padding:0 8px 6px;}
+  .bottomnav button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:8px 0;color:var(--slate);}
+  .bottomnav button.on{color:var(--ink);}
+  .bottomnav .ni{font-size:18px;}
+  .bottomnav .nl{font-size:10px;font-weight:600;}
+
+  /* ---------- SETTINGS / PHASES ---------- */
+  .toggle{width:46px;height:27px;border-radius:20px;background:var(--line);position:relative;cursor:pointer;transition:.2s;flex:0 0 46px;}
+  .toggle.on{background:var(--brass);}
+  .toggle .knob{position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25);}
+  .toggle.on .knob{left:22px;}
+  .langopt{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+  .phone.dark .langopt{background:var(--card);}
+  .langopt.sel{border-color:var(--brass);background:var(--brass-soft);}
+  .langopt .lflag{font-size:18px;margin-right:10px;}
+  .setlist{padding:10px 20px 100px;}
+  .setrow{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px;margin-bottom:10px;
+    display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:var(--shadow);}
+  .setrow .sl{display:flex;align-items:center;gap:13px;}
+  .setrow .sic{width:38px;height:38px;border-radius:10px;background:var(--concrete);display:grid;place-items:center;font-size:18px;}
+  .setrow .stitle{font-weight:600;font-size:15px;}
+  .setrow .sdesc{font-size:11.5px;color:var(--slate);margin-top:2px;}
+  .setrow .chev{color:var(--mute);font-size:20px;}
+
+  .preset-row{display:flex;gap:9px;padding:4px 20px 14px;}
+  .preset{flex:1;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:11px 8px;text-align:center;cursor:pointer;}
+  .preset.on{border-color:var(--brass);background:var(--brass-soft);}
+  .preset .pn{font-family:'Archivo';font-weight:700;font-size:13px;}
+  .preset .pc{font-size:10.5px;color:var(--slate);margin-top:2px;}
+
+  .phaselist{padding:6px 20px 120px;}
+  .phaserow{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px;
+    display:flex;align-items:center;gap:11px;box-shadow:var(--shadow);}
+  .phaserow .order{font-family:'Space Mono';font-size:11px;font-weight:700;color:var(--mute);width:18px;text-align:center;}
+  .phaserow .pdot{width:13px;height:13px;border-radius:50%;flex:0 0 13px;}
+  .phaserow .pname{flex:1;font-weight:600;font-size:14.5px;}
+  .phaserow .pctrl{display:flex;gap:3px;}
+  .phaserow .pbtn{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;
+    display:grid;place-items:center;font-size:14px;color:var(--slate);}
+  .phaserow .pbtn.del{color:var(--red);}
+  .addphase{width:100%;border:1.5px dashed var(--brass);background:var(--brass-soft);color:var(--brass-deep);
+    border-radius:12px;padding:14px;font-weight:700;font-size:14px;cursor:pointer;margin-top:4px;font-family:'Archivo';}
+
+  /* phase picker radio */
+  .pickrow{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:8px;
+    display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .pickrow .pdot{width:12px;height:12px;border-radius:50%;flex:0 0 12px;}
+  .pickrow .nm{flex:1;font-weight:600;font-size:14.5px;}
+  .pickrow .rad{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex:0 0 22px;display:grid;place-items:center;}
+  .pickrow.sel{border-color:var(--brass);background:var(--brass-soft);}
+  .pickrow.sel .rad{border-color:var(--brass);background:var(--brass);color:#fff;font-size:12px;}
+
+  /* ---------- ATTENTION STRIP ---------- */
+  .attn{margin:14px 20px 2px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--red);
+    border-radius:13px;padding:11px 14px;box-shadow:var(--shadow);}
+  .attn .ah{font-family:'Space Mono';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--red);display:flex;align-items:center;gap:6px;}
+  .attn .ahdot{width:7px;height:7px;border-radius:50%;background:var(--red);}
+  .attn .chips{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap;}
+  .attn .chip{font-size:11.5px;font-weight:600;padding:5px 10px;border-radius:8px;background:var(--concrete);color:var(--ink);cursor:pointer;}
+  .attn .chip.warn{background:var(--amber-soft);color:var(--amber);}
+  .attn .chip.crit{background:var(--red-soft);color:var(--red);}
+
+  /* ---------- PHOTO THUMBNAILS ---------- */
+  .pitem .ph{position:relative;}
+  .pitem .ph::after{content:"";position:absolute;right:3px;bottom:3px;width:14px;height:14px;border-radius:4px;
+    background:rgba(0,0,0,.45);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 2L7.2 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2h-3.2L15 2H9zm3 5a5 5 0 110 10 5 5 0 010-10z'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:center;}
+
+  /* ---------- PUNCH FILTER + BULK ---------- */
+  .punchbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+  .filterseg{display:flex;background:#DFE1E5;border-radius:9px;padding:3px;flex:1;}
+  .phone.dark .filterseg{background:#272D37;}
+  .filterseg button{flex:1;border:none;background:transparent;font-weight:600;font-size:12px;color:var(--slate);padding:7px 0;border-radius:7px;cursor:pointer;}
+  .filterseg button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow);}
+  .phone.dark .filterseg button.on{background:var(--card);}
+  .bulkbtn{background:var(--ink);color:#fff;border:none;border-radius:9px;padding:9px 12px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;}
+  .phone.dark .bulkbtn{background:var(--brass);color:var(--on-accent);}
+  .pitem.done-item{opacity:.6;}
+  .pitem.done-item .desc{text-decoration:line-through;}
+
+  /* ---------- NOTES ---------- */
+  .notecard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;box-shadow:var(--shadow);}
+  .notecard .nmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+  .notecard .nwho{font-weight:700;font-size:12.5px;}
+  .notecard .nwhen{font-family:'Space Mono';font-size:10.5px;color:var(--mute);}
+  .notecard .ntext{font-size:13.5px;line-height:1.4;color:var(--slate);}
+  .noteinput{display:flex;gap:8px;margin-top:6px;}
+  .noteinput input{flex:1;border:1px solid var(--line);background:#fff;border-radius:11px;padding:12px 13px;font-size:14px;font-family:'Inter';}
+  .phone.dark .noteinput input{background:var(--card);color:var(--ink);}
+  .noteinput button{background:var(--brass);color:var(--on-accent);border:none;border-radius:11px;padding:0 16px;font-weight:700;cursor:pointer;}
+
+  /* commitment badge */
+  .commit{display:inline-flex;align-items:center;gap:6px;background:var(--steel-soft);color:var(--steel);
+    font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;margin-top:10px;}
+
+  /* ---------- VENDORS ---------- */
+  .vsearch{padding:0 20px 6px;}
+  .vsearch input{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px 12px 38px;font-size:14px;font-family:'Inter';
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238A909B' stroke-width='2.4'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.5' y2='16.5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:14px center;}
+  .vlist{padding:8px 20px 100px;}
+  .vtrade-label{font-family:'Space Mono';font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--slate);margin:14px 2px 9px;display:flex;align-items:center;gap:8px;}
+  .vtrade-label .ic{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-size:12px;}
+  .vcard{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:10px;overflow:hidden;}
+  .vcard .vtop{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+  .vcard .vname{font-family:'Archivo';font-weight:700;font-size:15.5px;}
+  .vcard .vmeta{font-size:11.5px;color:var(--slate);margin-top:2px;}
+  .vcard .vcount{font-family:'Space Mono';font-weight:700;font-size:12px;background:var(--amber-soft);color:var(--amber);padding:3px 9px;border-radius:20px;}
+  .vcard .vcount.clear{background:var(--green-soft);color:var(--green);}
+  .vactions{display:flex;border-top:1px solid var(--line);}
+  .vactions a{flex:1;text-align:center;padding:11px 0;font-weight:600;font-size:12.5px;color:var(--steel);text-decoration:none;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;}
+  .vactions a + a{border-left:1px solid var(--line);}
+  .vactions .em{font-size:14px;}
+  /* vendor detail */
+  .vdetailhead{background:var(--shell);color:#fff;padding:14px 20px 20px;}
+  .vdetailhead .vbadge{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;font-size:26px;margin-top:12px;}
+  .vdetailhead h2{font-family:'Archivo';font-weight:800;font-size:24px;margin-top:12px;}
+  .vdetailhead .vt{font-family:'Space Mono';font-size:12px;letter-spacing:.06em;color:var(--brass);text-transform:uppercase;margin-top:4px;}
+  .vcontactbar{display:flex;gap:9px;padding:16px 20px 4px;}
+  .vcontactbar a{flex:1;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:13px 8px;text-decoration:none;color:var(--ink);
+    display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:600;font-size:12.5px;cursor:pointer;}
+  .vcontactbar .ci{font-size:19px;}
+
+  .overlay{position:absolute;inset:0;background:rgba(22,25,31,.5);display:none;align-items:flex-end;z-index:20;}
+  .overlay.show{display:flex;}
+  .sheet{background:var(--concrete);width:100%;border-radius:22px 22px 0 0;padding:22px 20px 30px;animation:up .22s ease;}
+  @keyframes up{from{transform:translateY(40px);opacity:.6;}to{transform:translateY(0);opacity:1;}}
+  .sheet h3{font-family:'Archivo';font-weight:800;font-size:19px;}
+  .sheet p{font-size:13.5px;color:var(--slate);margin-top:6px;line-height:1.45;}
+  .sendopt{display:flex;gap:10px;margin:16px 0 4px;}
+  .sendopt button{flex:1;background:#fff;border:1px solid var(--line);border-radius:13px;padding:14px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:600;font-size:13px;}
+  .sendopt .si{font-size:20px;}
+  .toast{position:absolute;left:20px;right:20px;bottom:90px;background:var(--shell);color:#fff;border-radius:13px;padding:14px 16px;font-size:13.5px;display:flex;align-items:center;gap:10px;z-index:30;box-shadow:0 8px 24px rgba(0,0,0,.3);opacity:0;transform:translateY(12px);transition:.25s;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateY(0);}
+  .toast .ok{width:22px;height:22px;border-radius:50%;background:var(--green);display:grid;place-items:center;font-size:12px;flex:0 0 22px;}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ============ LOGIN / SPLASH ============ -->
+  <div class="screen active" id="login">
+    <div class="glow"></div>
+    <div class="logo-stack">
+      <svg class="bob" width="58" height="86" viewBox="0 0 58 86" fill="none">
+        <line x1="29" y1="2" x2="29" y2="26" stroke="#B5852F" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="29" cy="29" r="4" stroke="#B5852F" stroke-width="2.5"/>
+        <path d="M29 33 L44 54 L29 84 L14 54 Z" fill="#B5852F"/>
+        <path d="M29 33 L44 54 L29 60 Z" fill="#D9A94E"/>
+        <path d="M29 33 L14 54 L29 60 Z" fill="#9A6F22"/>
+      </svg>
+      <div>
+        <div class="wordmark">Plumb</div>
+        <div class="tagline" style="text-align:center;margin-top:6px">Keep every build true</div>
+      </div>
+      <div class="grain">Field punch lists, home stages, and vendor handoffs — built for the job site.</div>
+
+      <div style="width:100%">
+        <div class="comm">Signed in to</div>
+        <div class="commbox">
+          <div><div class="cn">Maple Ridge — Community 04</div><div class="cr">Marcus Tate · Project Manager</div></div>
+          <div class="avatar" style="background:var(--brass);color:var(--on-accent)">MT</div>
+        </div>
+        <button class="enterbtn" onclick="show('dash')">Enter site</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DASHBOARD ============ -->
+  <div class="screen" id="dash">
+    <div class="appbar">
+      <div class="brandrow">
+        <span class="wordmark">
+          <svg width="15" height="24" viewBox="0 0 58 86" fill="none" style="vertical-align:-3px">
+            <line x1="29" y1="2" x2="29" y2="26" stroke="#B5852F" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="29" cy="29" r="4" stroke="#B5852F" stroke-width="3"/>
+            <path d="M29 33 L44 54 L29 84 L14 54 Z" fill="#B5852F"/>
+          </svg>
+          Plumb
+        </span>
+        <div class="avatar">MT</div>
+      </div>
+      <div class="eyebrow"><span class="pin"></span> Maple Ridge — Community 04</div>
+      <h1>Your Homes</h1>
+      <div class="switch">
+        <button class="on" onclick="setView(event,'v-portfolio')">Portfolio</button>
+        <button onclick="setView(event,'v-pipeline')">Pipeline</button>
+        <button onclick="setView(event,'v-schedule')">Schedule</button>
+        <button onclick="setView(event,'v-trades')">Trades</button>
+      </div>
+    </div>
+
+    <div id="v-portfolio" class="dview">
+      <div class="attn">
+        <div class="ah"><span class="ahdot"></span> Needs attention</div>
+        <div class="chips">
+          <span class="chip crit" onclick="openHome()">Lot 58 closes Fri · 1 item open</span>
+          <span class="chip warn" onclick="openHome()">Lot 47 committed Jul 18</span>
+          <span class="chip warn" onclick="openHome()">2 items open 10+ days</span>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="n">5</div><div class="l">Active homes</div></div>
+        <div class="metric alert"><div class="n">13</div><div class="l">Open punch items</div></div>
+        <div class="metric soon"><div class="n">3</div><div class="l">Closings &le; 30d</div></div>
+      </div>
+      <div class="listwrap">
+        <div class="section-label">// On site</div>
+
+        <div class="card" onclick="openHome()">
+          <div class="spine" style="background:var(--brass)"></div>
+          <div class="body">
+            <div class="row1"><span class="lotstamp">LOT 47</span>
+              <span class="stagepill" style="background:var(--brass-soft);color:var(--brass-deep)"><span class="d" style="background:var(--brass)"></span>Trim</span></div>
+            <h3>1420 Maple Ridge Dr</h3>
+            <div class="owner">Henderson · closing Jul 18</div>
+            <div class="track"><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg now"></div><div class="seg"></div><div class="seg"></div></div>
+            <div class="foot"><span class="punchcount"><span class="badge">8</span> open items</span>
+              <span class="nextmeet">Next up<b>Pre-paint walk · Wed</b></span></div>
+          </div>
+        </div>
+
+        <div class="card" onclick="openHome()">
+          <div class="spine" style="background:#7A57C9"></div>
+          <div class="body">
+            <div class="row1"><span class="lotstamp">LOT 52</span>
+              <span class="stagepill" style="background:#F0E9FB;color:#6A45B5"><span class="d" style="background:#7A57C9"></span>Paint</span></div>
+            <h3>1438 Maple Ridge Dr</h3>
+            <div class="owner">Okafor · closing Jul 2</div>
+            <div class="track"><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg now"></div><div class="seg"></div></div>
+            <div class="foot"><span class="punchcount"><span class="badge">3</span> open items</span>
+              <span class="nextmeet">Next up<b>Final walkthrough · Fri</b></span></div>
+          </div>
+        </div>
+
+        <div class="card" onclick="openHome()">
+          <div class="spine" style="background:var(--green)"></div>
+          <div class="body">
+            <div class="row1"><span class="lotstamp">LOT 58</span>
+              <span class="stagepill" style="background:var(--green-soft);color:var(--green)"><span class="d" style="background:var(--green)"></span>Closing</span></div>
+            <h3>1455 Maple Ridge Dr</h3>
+            <div class="owner">Patel · closing Jun 27</div>
+            <div class="track"><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg done"></div><div class="seg now"></div></div>
+            <div class="foot"><span class="punchcount clear"><span class="badge">1</span> open item</span>
+              <span class="nextmeet">Next up<b>Closing · Fri 9am</b></span></div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:18px">// Early stage</div>
+        <div class="card" onclick="openHome()">
+          <div class="spine" style="background:#5C6470"></div>
+          <div class="body">
+            <div class="row1"><span class="lotstamp">LOT 31</span>
+              <span class="stagepill" style="background:#E7E9ED;color:var(--slate)"><span class="d" style="background:#5C6470"></span>Foundation</span></div>
+            <h3>1402 Maple Ridge Dr</h3>
+            <div class="owner">Reyes · est. close Oct 10</div>
+            <div class="track"><div class="seg done"></div><div class="seg now"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div></div>
+            <div class="foot"><span class="punchcount clear"><span class="badge">0</span> open items</span>
+              <span class="nextmeet">Next up<b>Pre-con meeting · Mon</b></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="v-pipeline" class="dview" style="display:none">
+      <div class="pipe">
+        <div class="pipecol"><h4><span class="d" style="background:#5C6470"></span>Foundation <span class="ct">1</span></h4>
+          <div class="minicard" style="border-left-color:#5C6470" onclick="openHome()"><div><div class="mt">1402 Maple Ridge</div><div class="ms">Reyes · pour scheduled Mon</div></div><span class="lot">LOT 31</span></div></div>
+        <div class="pipecol"><h4><span class="d" style="background:#2C5C84"></span>Framing <span class="ct">1</span></h4>
+          <div class="minicard" style="border-left-color:#2C5C84" onclick="openHome()"><div><div class="mt">1411 Maple Ridge</div><div class="ms">Cole · roof load Thu</div></div><span class="lot">LOT 44</span></div></div>
+        <div class="pipecol"><h4><span class="d" style="background:var(--brass)"></span>Trim <span class="ct">1</span></h4>
+          <div class="minicard" style="border-left-color:var(--brass)" onclick="openHome()"><div><div class="mt">1420 Maple Ridge</div><div class="ms">Henderson · 8 open items</div></div><span class="lot">LOT 47</span></div></div>
+        <div class="pipecol"><h4><span class="d" style="background:#7A57C9"></span>Paint <span class="ct">1</span></h4>
+          <div class="minicard" style="border-left-color:#7A57C9" onclick="openHome()"><div><div class="mt">1438 Maple Ridge</div><div class="ms">Okafor · 3 open items</div></div><span class="lot">LOT 52</span></div></div>
+        <div class="pipecol"><h4><span class="d" style="background:var(--green)"></span>Closing <span class="ct">1</span></h4>
+          <div class="minicard" style="border-left-color:var(--green)" onclick="openHome()"><div><div class="mt">1455 Maple Ridge</div><div class="ms">Patel · closes Fri 9am</div></div><span class="lot">LOT 58</span></div></div>
+      </div>
+    </div>
+
+    <div id="v-schedule" class="dview" style="display:none">
+      <div class="sched">
+        <div class="dayhdr">Today · Tue Jun 23</div>
+        <div class="meet"><span class="time">10:30a</span><div><div class="mtitle">Pre-paint walk</div><div class="mwhere">Lot 47 · 1420 Maple Ridge</div><span class="tag" style="background:var(--brass-soft);color:var(--brass-deep)">Walkthrough</span></div></div>
+        <div class="dayhdr">Wed Jun 24</div>
+        <div class="meet"><span class="time">9:00a</span><div><div class="mtitle">Homeowner orientation</div><div class="mwhere">Lot 52 · 1438 Maple Ridge</div><span class="tag" style="background:var(--steel-soft);color:var(--steel)">Homeowner</span></div></div>
+        <div class="dayhdr">Fri Jun 27</div>
+        <div class="meet"><span class="time">9:00a</span><div><div class="mtitle">Closing</div><div class="mwhere">Lot 58 · 1455 Maple Ridge</div><span class="tag" style="background:var(--green-soft);color:var(--green)">Closing</span></div></div>
+        <div class="meet"><span class="time">2:00p</span><div><div class="mtitle">Final walkthrough</div><div class="mwhere">Lot 52 · 1438 Maple Ridge</div><span class="tag" style="background:var(--brass-soft);color:var(--brass-deep)">Walkthrough</span></div></div>
+        <div class="dayhdr">Mon Jun 30</div>
+        <div class="meet"><span class="time">8:00a</span><div><div class="mtitle">Pre-construction meeting</div><div class="mwhere">Lot 31 · 1402 Maple Ridge</div><span class="tag" style="background:#E7E9ED;color:var(--slate)">Pre-con</span></div></div>
+      </div>
+    </div>
+
+    <div id="v-trades" class="dview" style="display:none">
+      <div class="trades">
+        <div class="section-label" style="margin-left:0">// Open items by trade — all homes</div>
+        <div class="tradebar"><div class="th"><span class="name"><span class="ic" style="background:var(--brass-soft)">🖌️</span>Paint</span><span class="open">5</span></div><div class="meter"><span style="width:62%;background:var(--brass)"></span></div><div class="who">Diego's Painting · across 2 homes</div></div>
+        <div class="tradebar"><div class="th"><span class="name"><span class="ic" style="background:var(--steel-soft)">🪚</span>Trim</span><span class="open">4</span></div><div class="meter"><span style="width:50%;background:var(--steel)"></span></div><div class="who">Coastal Trim Co · Lot 47</div></div>
+        <div class="tradebar"><div class="th"><span class="name"><span class="ic" style="background:var(--green-soft)">🚿</span>Tile</span><span class="open">2</span></div><div class="meter"><span style="width:26%;background:var(--green)"></span></div><div class="who">Sierra Tile · Lot 47</div></div>
+        <div class="tradebar"><div class="th"><span class="name"><span class="ic" style="background:#F0E9FB">🔧</span>Plumbing</span><span class="open">1</span></div><div class="meter"><span style="width:14%;background:#7A57C9"></span></div><div class="who">Apex Plumbing · Lot 47</div></div>
+        <div class="tradebar"><div class="th"><span class="name"><span class="ic" style="background:var(--red-soft)">⚡</span>Electrical</span><span class="open">1</span></div><div class="meter"><span style="width:14%;background:var(--red)"></span></div><div class="who">Volt Electric · Lot 58</div></div>
+      </div>
+    </div>
+
+    <button class="fab" onclick="openLog()">+</button>
+    <div class="bottomnav">
+      <button class="on"><span class="ni">▦</span><span class="nl">Homes</span></button>
+      <button onclick="openVendors()"><span class="ni">👷</span><span class="nl">Vendors</span></button>
+      <button onclick="setView({target:document.querySelector('.switch button:nth-child(3)')},'v-schedule');document.querySelectorAll('.switch button').forEach(function(b,i){b.classList.toggle('on',i===2)})"><span class="ni">🗓</span><span class="nl">Schedule</span></button>
+      <button onclick="show('settings')"><span class="ni">⚙︎</span><span class="nl">Settings</span></button>
+    </div>
+  </div>
+
+  <!-- ============ HOME DETAIL ============ -->
+  <div class="screen" id="home">
+    <div class="detailhead">
+      <div class="backrow"><button class="iconbtn" onclick="show('dash')">‹</button><span class="lotstamp">LOT 47</span><button class="iconbtn" onclick="toast('Edit home details')">⋯</button></div>
+      <h2>1420 Maple Ridge Dr</h2>
+      <div class="addr">Henderson Family · Community 04</div>
+      <div class="commit">📅 Commitment date · Jul 18, 2026</div>
+      <div class="stagebox" onclick="openPhasePicker()" style="cursor:pointer">
+        <span class="stagenow" id="home-stage">● Trim stage <span style="font-size:11px;color:rgba(255,255,255,.5)">▾ change</span></span>
+        <span class="stagenext" id="home-stagenext">Next: Paint<br>Pre-paint walk · Wed 10:30a</span>
+      </div>
+      <div class="dtrack" id="home-track"></div>
+    </div>
+    <div class="tabbar">
+      <button class="on" onclick="dtab(event,'d-punch')">Punch list</button>
+      <button onclick="dtab(event,'d-info')">Home info</button>
+      <button onclick="dtab(event,'d-meet')">Milestones</button>
+      <button onclick="dtab(event,'d-notes')">Notes</button>
+    </div>
+
+    <div class="dpanel on" id="d-punch">
+      <div class="punchbar">
+        <div class="filterseg">
+          <button class="on" onclick="filterPunch(event,'all')">All</button>
+          <button onclick="filterPunch(event,'open')">Open</button>
+          <button onclick="filterPunch(event,'sent')">Sent</button>
+          <button onclick="filterPunch(event,'done')">Done</button>
+        </div>
+        <button class="bulkbtn" onclick="openSend('all open items for this home')">⇪ Send all open</button>
+      </div>
+      <div class="pgroup">
+        <div class="pgrouphdr"><span class="lft"><span class="ic" style="background:var(--brass-soft)">🖌️</span><span><span class="tname">Paint</span><br><span class="assignee">Diego's Painting</span></span></span><button class="sendbtn" onclick="openSend('Diego\'s Painting')">⇪ Send</button></div>
+        <div class="pitem" data-status="open"><div class="ph" style="background:linear-gradient(135deg,#cdd2d8,#aeb4bd)"></div><div><span class="loc">Master Bath</span><div class="desc">Touch up paint on trim around window — visible drips</div><span class="st" style="background:var(--amber-soft);color:var(--amber)">Open</span></div></div>
+        <div class="pitem" data-status="open"><div class="ph" style="background:linear-gradient(135deg,#d6cfc4,#b3a892)"></div><div><span class="loc">Kitchen</span><div class="desc">Drywall scuff above sink needs prime + paint</div><span class="st" style="background:var(--amber-soft);color:var(--amber)">Open</span></div></div>
+        <div class="pitem" data-status="done"><div class="ph" style="background:linear-gradient(135deg,#c7cdc9,#9fa8a2)"></div><div><span class="loc">Foyer</span><div class="desc">Caulk gap at baseboard, then paint</div><span class="st" style="background:var(--green-soft);color:var(--green)">Done</span></div></div>
+      </div>
+      <div class="pgroup">
+        <div class="pgrouphdr"><span class="lft"><span class="ic" style="background:var(--steel-soft)">🪚</span><span><span class="tname">Trim</span><br><span class="assignee">Coastal Trim Co</span></span></span><button class="sendbtn" onclick="openSend('Coastal Trim Co')">⇪ Send</button></div>
+        <div class="pitem" data-status="open"><div class="ph" style="background:linear-gradient(135deg,#d8cbb6,#bfa988)"></div><div><span class="loc">Master Bedroom</span><div class="desc">Window casing chipped on left side — replace piece</div><span class="st" style="background:var(--amber-soft);color:var(--amber)">Open</span></div></div>
+        <div class="pitem" data-status="sent"><div class="ph" style="background:linear-gradient(135deg,#cdd2d8,#a7adb6)"></div><div><span class="loc">Stairs</span><div class="desc">Handrail bracket loose at mid-landing</div><span class="st" style="background:var(--steel-soft);color:var(--steel)">Sent</span></div></div>
+      </div>
+      <div class="pgroup">
+        <div class="pgrouphdr"><span class="lft"><span class="ic" style="background:var(--green-soft)">🚿</span><span><span class="tname">Tile</span><br><span class="assignee">Sierra Tile</span></span></span><button class="sendbtn" onclick="openSend('Sierra Tile')">⇪ Send</button></div>
+        <div class="pitem" data-status="open"><div class="ph" style="background:linear-gradient(135deg,#cfd5d6,#a3acad)"></div><div><span class="loc">Master Shower</span><div class="desc">Grout crack at bench corner — regrout</div><span class="st" style="background:var(--amber-soft);color:var(--amber)">Open</span></div></div>
+      </div>
+    </div>
+
+    <div class="dpanel" id="d-info">
+      <div class="section-label" style="margin-left:0">// Build</div>
+      <div class="inforow"><div class="k">Commitment date</div><div class="v">Jul 18, 2026 · finalization</div></div>
+      <div class="inforow"><div class="k">Lot / Plan</div><div class="v">Lot 47 · Magnolia B elevation</div></div>
+      <div class="section-label" style="margin-left:0;margin-top:16px">// Homeowner</div>
+      <div class="inforow"><div class="k">Name</div><div class="v">James &amp; Renee Henderson</div></div>
+      <div class="inforow"><div class="k">Phone</div><div class="v link">(704) 555-0182</div></div>
+      <div class="inforow"><div class="k">Email</div><div class="v link">r.henderson@email.com</div></div>
+    </div>
+
+    <div class="dpanel" id="d-notes">
+      <div class="section-label" style="margin-left:0">// Notes for this address</div>
+      <div id="notelist">
+        <div class="notecard"><div class="nmeta"><span class="nwho">Marcus T.</span><span class="nwhen">Jun 20</span></div><div class="ntext">Homeowner requested extra outlet in garage — confirmed with electrician, adding to next walk.</div></div>
+        <div class="notecard"><div class="nmeta"><span class="nwho">Marcus T.</span><span class="nwhen">Jun 17</span></div><div class="ntext">Backordered tile for master shower arrives next week. Hold tile punch until then.</div></div>
+      </div>
+      <div class="noteinput"><input id="noteText" placeholder="Add a note to this home…"><button onclick="addNote()">Add</button></div>
+    </div>
+
+    <div class="dpanel" id="d-meet">
+      <div class="meet"><span class="time">Wed<br>10:30a</span><div><div class="mtitle">Pre-paint walk</div><div class="mwhere">With site super</div><span class="tag" style="background:var(--brass-soft);color:var(--brass-deep)">Upcoming</span></div></div>
+      <div class="meet"><span class="time">Jul 9<br>2:00p</span><div><div class="mtitle">Homeowner orientation</div><div class="mwhere">Henderson family on site</div><span class="tag" style="background:var(--steel-soft);color:var(--steel)">Scheduled</span></div></div>
+      <div class="meet"><span class="time">Jul 16<br>9:00a</span><div><div class="mtitle">Final walkthrough</div><div class="mwhere">Punch sign-off</div><span class="tag" style="background:var(--steel-soft);color:var(--steel)">Scheduled</span></div></div>
+      <div class="meet"><span class="time">Jul 18<br>11:00a</span><div><div class="mtitle">Closing</div><div class="mwhere">Title office</div><span class="tag" style="background:var(--green-soft);color:var(--green)">Scheduled</span></div></div>
+    </div>
+
+    <div class="footaction"><button class="btn primary" onclick="openLog()">+ &nbsp;Log punch items</button></div>
+  </div>
+
+  <!-- ============ PUNCH LOGGING ============ -->
+  <div class="screen" id="log">
+    <div class="loghead">
+      <div class="backrow"><button class="iconbtn" onclick="show('home')">‹</button><span class="lotstamp" style="background:rgba(181,133,47,.16);border-color:rgba(181,133,47,.4);color:var(--brass)">LOT 47</span><span style="width:36px"></span></div>
+      <h2>Log punch items</h2>
+    </div>
+    <div class="logbody">
+      <div class="field"><label>Locked trade — items auto-assign here</label>
+        <div class="lockcard"><span class="lc-l"><span class="ic">🖌️</span><span><span class="trade">Paint</span><div class="person">Diego's Painting</div></span></span><span class="lock">🔒 Locked</span></div>
+      </div>
+      <div class="field"><label>Room / location</label><input class="input" placeholder="e.g. Master bath"></div>
+      <div class="field"><label>What needs doing</label><textarea class="input" placeholder="Describe the item…"></textarea>
+        <div class="voicehint"><span class="mic">🎙</span> Hold to dictate — hands-free with gloves on</div></div>
+      <div class="field"><label>Photo (optional)</label><div class="photoadd">📷 &nbsp;Tap to add a photo</div></div>
+      <div class="field"><label>Added this visit — 2 items</label>
+        <div class="addedrow"><div><span class="al">Master Bath</span><div class="ad">Touch up trim around window</div></div><span style="color:var(--green);font-size:18px">✓</span></div>
+        <div class="addedrow"><div><span class="al">Kitchen</span><div class="ad">Drywall scuff above sink</div></div><span style="color:var(--green);font-size:18px">✓</span></div>
+      </div>
+    </div>
+    <div class="footaction"><div class="btnrow"><button class="btn ghost" onclick="addItem()">Save &amp; add another</button><button class="btn primary" onclick="show('home');toast('3 paint items saved to Lot 47')">Done</button></div></div>
+  </div>
+
+  <!-- ============ TRADESMAN ============ -->
+  <div class="screen" id="trade">
+    <div class="tradehead">
+      <div class="backrow" style="margin-bottom:4px"><button class="iconbtn" onclick="show('dash')">‹</button><span style="font-family:'Space Mono';font-size:11px;color:rgba(255,255,255,.7)">WORK ORDER #1420-P</span><span style="width:36px"></span></div>
+      <div class="eyebrow">Diego's Painting</div>
+      <h2>Your paint items</h2>
+      <div class="sub">1420 Maple Ridge Dr · Lot 47 · 3 items</div>
+    </div>
+    <div class="tradebody">
+      <div class="twork" onclick="toggleDone(this)"><div class="tw-top"><div><span class="loc">Master Bath</span><div class="desc">Touch up paint on trim around window — visible drips</div></div><div class="check">✓</div></div><div class="home">📷 1 photo attached</div></div>
+      <div class="twork" onclick="toggleDone(this)"><div class="tw-top"><div><span class="loc">Kitchen</span><div class="desc">Drywall scuff above sink needs prime + paint</div></div><div class="check">✓</div></div><div class="home">📷 1 photo attached</div></div>
+      <div class="twork" onclick="toggleDone(this)"><div class="tw-top"><div><span class="loc">Foyer</span><div class="desc">Caulk gap at baseboard, then paint</div></div><div class="check">✓</div></div><div class="home">📷 1 photo attached</div></div>
+      <div class="field" style="margin-top:18px"><label>Note for the builder (optional)</label><textarea class="input" placeholder="e.g. Foyer caulk needs to cure — will paint tomorrow"></textarea></div>
+    </div>
+    <div class="footaction"><button class="btn steel" onclick="show('dash');toast('Marked complete — Marcus notified')">Mark work complete</button></div>
+  </div>
+
+  <!-- ============ VENDORS DIRECTORY ============ -->
+  <div class="screen" id="vendors">
+    <div class="appbar">
+      <div class="brandrow">
+        <span class="wordmark">
+          <svg width="15" height="24" viewBox="0 0 58 86" fill="none" style="vertical-align:-3px">
+            <line x1="29" y1="2" x2="29" y2="26" stroke="#B5852F" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="29" cy="29" r="4" stroke="#B5852F" stroke-width="3"/>
+            <path d="M29 33 L44 54 L29 84 L14 54 Z" fill="#B5852F"/>
+          </svg>
+          Plumb
+        </span>
+        <div class="avatar">MT</div>
+      </div>
+      <div class="eyebrow"><span class="pin"></span> Maple Ridge — Community 04</div>
+      <h1>Vendors</h1>
+    </div>
+    <div class="vsearch"><input placeholder="Search by name or trade"></div>
+    <div class="vlist">
+      <div class="vtrade-label"><span class="ic" style="background:var(--brass-soft)">🖌️</span> Paint</div>
+      <div class="vcard">
+        <div class="vtop" onclick="openVendor('Diego\'s Painting','Paint','🖌️','var(--brass-soft)')">
+          <div><div class="vname">Diego's Painting</div><div class="vmeta">Diego Marín · (704) 555-0143</div></div>
+          <span class="vcount">5 open</span>
+        </div>
+        <div class="vactions"><a onclick="toast('Calling Diego\'s Painting')"><span class="em">📞</span>Call</a><a onclick="toast('Texting Diego\'s Painting')"><span class="em">💬</span>Text</a><a onclick="toast('Emailing Diego\'s Painting')"><span class="em">✉️</span>Email</a></div>
+      </div>
+
+      <div class="vtrade-label"><span class="ic" style="background:var(--steel-soft)">🪚</span> Trim</div>
+      <div class="vcard">
+        <div class="vtop" onclick="openVendor('Coastal Trim Co','Trim','🪚','var(--steel-soft)')">
+          <div><div class="vname">Coastal Trim Co</div><div class="vmeta">Ray Boudreaux · (704) 555-0199</div></div>
+          <span class="vcount">4 open</span>
+        </div>
+        <div class="vactions"><a onclick="toast('Calling Coastal Trim Co')"><span class="em">📞</span>Call</a><a onclick="toast('Texting Coastal Trim Co')"><span class="em">💬</span>Text</a><a onclick="toast('Emailing Coastal Trim Co')"><span class="em">✉️</span>Email</a></div>
+      </div>
+
+      <div class="vtrade-label"><span class="ic" style="background:var(--green-soft)">🚿</span> Tile</div>
+      <div class="vcard">
+        <div class="vtop" onclick="openVendor('Sierra Tile','Tile','🚿','var(--green-soft)')">
+          <div><div class="vname">Sierra Tile</div><div class="vmeta">Ana Sierra · (704) 555-0166</div></div>
+          <span class="vcount">2 open</span>
+        </div>
+        <div class="vactions"><a onclick="toast('Calling Sierra Tile')"><span class="em">📞</span>Call</a><a onclick="toast('Texting Sierra Tile')"><span class="em">💬</span>Text</a><a onclick="toast('Emailing Sierra Tile')"><span class="em">✉️</span>Email</a></div>
+      </div>
+
+      <div class="vtrade-label"><span class="ic" style="background:#F0E9FB">🔧</span> Plumbing</div>
+      <div class="vcard">
+        <div class="vtop" onclick="openVendor('Apex Plumbing','Plumbing','🔧','#F0E9FB')">
+          <div><div class="vname">Apex Plumbing</div><div class="vmeta">Tom Reyes · (704) 555-0121</div></div>
+          <span class="vcount">1 open</span>
+        </div>
+        <div class="vactions"><a onclick="toast('Calling Apex Plumbing')"><span class="em">📞</span>Call</a><a onclick="toast('Texting Apex Plumbing')"><span class="em">💬</span>Text</a><a onclick="toast('Emailing Apex Plumbing')"><span class="em">✉️</span>Email</a></div>
+      </div>
+
+      <div class="vtrade-label"><span class="ic" style="background:var(--red-soft)">⚡</span> Electrical</div>
+      <div class="vcard">
+        <div class="vtop" onclick="openVendor('Volt Electric','Electrical','⚡','var(--red-soft)')">
+          <div><div class="vname">Volt Electric</div><div class="vmeta">Priya Nair · (704) 555-0188</div></div>
+          <span class="vcount clear">0 open</span>
+        </div>
+        <div class="vactions"><a onclick="toast('Calling Volt Electric')"><span class="em">📞</span>Call</a><a onclick="toast('Texting Volt Electric')"><span class="em">💬</span>Text</a><a onclick="toast('Emailing Volt Electric')"><span class="em">✉️</span>Email</a></div>
+      </div>
+    </div>
+
+    <button class="fab" onclick="toast('Add a new vendor')">+</button>
+    <div class="bottomnav">
+      <button onclick="show('dash')"><span class="ni">▦</span><span class="nl">Homes</span></button>
+      <button class="on"><span class="ni">👷</span><span class="nl">Vendors</span></button>
+      <button onclick="show('dash');setTimeout(function(){document.querySelectorAll('.switch button').forEach(function(b,i){b.classList.toggle('on',i===2)});document.querySelectorAll('.dview').forEach(function(v){v.style.display='none'});document.getElementById('v-schedule').style.display='block'},10)"><span class="ni">🗓</span><span class="nl">Schedule</span></button>
+      <button onclick="show('settings')"><span class="ni">⚙︎</span><span class="nl">Settings</span></button>
+    </div>
+  </div>
+
+  <!-- ============ VENDOR DETAIL ============ -->
+  <div class="screen" id="vendor">
+    <div class="vdetailhead">
+      <div class="backrow"><button class="iconbtn" onclick="show('vendors')">‹</button><span style="font-family:'Space Mono';font-size:11px;color:rgba(255,255,255,.6)">VENDOR</span><button class="iconbtn" onclick="toast('Edit vendor')">⋯</button></div>
+      <div class="vbadge" id="vd-badge">🖌️</div>
+      <h2 id="vd-name">Diego's Painting</h2>
+      <div class="vt" id="vd-trade">Paint</div>
+    </div>
+    <div class="vcontactbar">
+      <a onclick="toast('Calling…')"><span class="ci">📞</span>Call</a>
+      <a onclick="toast('Texting…')"><span class="ci">💬</span>Text</a>
+      <a onclick="toast('Emailing…')"><span class="ci">✉️</span>Email</a>
+    </div>
+    <div style="padding:14px 20px 100px">
+      <div class="section-label" style="margin-left:0">// Contact</div>
+      <div class="inforow"><div class="k">Lead</div><div class="v" id="vd-lead">Diego Marín</div></div>
+      <div class="inforow"><div class="k">Phone</div><div class="v link" id="vd-phone">(704) 555-0143</div></div>
+      <div class="inforow"><div class="k">Email</div><div class="v link">diego@diegospainting.com</div></div>
+
+      <div class="section-label" style="margin-left:0;margin-top:16px">// Active work — all homes</div>
+      <div class="pitem"><div class="ph" style="background:linear-gradient(135deg,#cdd2d8,#aeb4bd)"></div><div><span class="loc">Lot 47 · Master Bath</span><div class="desc">Touch up trim around window</div><span class="st" style="background:var(--amber-soft);color:var(--amber)">Open</span></div></div>
+      <div class="pitem"><div class="ph" style="background:linear-gradient(135deg,#d6cfc4,#b3a892)"></div><div><span class="loc">Lot 47 · Kitchen</span><div class="desc">Drywall scuff above sink</div><span class="st" style="background:var(--amber-soft);color:var(--amber)">Open</span></div></div>
+      <div class="pitem"><div class="ph" style="background:linear-gradient(135deg,#cfd5d6,#a3acad)"></div><div><span class="loc">Lot 52 · Garage</span><div class="desc">Final coat on door frames</div><span class="st" style="background:var(--steel-soft);color:var(--steel)">Sent</span></div></div>
+    </div>
+    <div class="footaction"><button class="btn primary" onclick="toast('Sending open items to this vendor')">⇪ &nbsp;Send open items</button></div>
+  </div>
+
+  <!-- ============ SETTINGS ============ -->
+  <div class="screen" id="settings">
+    <div class="appbar">
+      <div class="brandrow">
+        <span class="wordmark">
+          <svg width="15" height="24" viewBox="0 0 58 86" fill="none" style="vertical-align:-3px">
+            <line x1="29" y1="2" x2="29" y2="26" stroke="#B5852F" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="29" cy="29" r="4" stroke="#B5852F" stroke-width="3"/>
+            <path d="M29 33 L44 54 L29 84 L14 54 Z" fill="#B5852F"/>
+          </svg>
+          Plumb
+        </span>
+        <div class="avatar">MT</div>
+      </div>
+      <div class="eyebrow"><span class="pin"></span> Maple Ridge — Community 04</div>
+      <h1>Settings</h1>
+    </div>
+    <div class="setlist">
+      <div class="setrow" onclick="event.stopPropagation()">
+        <span class="sl"><span class="sic">🌙</span><span><div class="stitle">Dark mode</div><div class="sdesc">Easier on the eyes in dim or bright sun</div></span></span>
+        <span class="toggle" id="darktoggle" onclick="toggleDark(this)"><span class="knob"></span></span>
+      </div>
+      <div class="setrow" onclick="show('phases')">
+        <span class="sl"><span class="sic">🪜</span><span><div class="stitle">Construction phases</div><div class="sdesc" id="set-phasecount">9 phases · applies to this community</div></span></span>
+        <span class="chev">›</span>
+      </div>
+      <div class="setrow" onclick="show('trades-editor')">
+        <span class="sl"><span class="sic">🧰</span><span><div class="stitle">Trade types</div><div class="sdesc" id="set-tradecount">8 trades · used when logging punch items</div></span></span>
+        <span class="chev">›</span>
+      </div>
+      <div class="setrow" onclick="openLang()">
+        <span class="sl"><span class="sic">🌐</span><span><div class="stitle">Language</div><div class="sdesc" id="set-lang">English · for field crews &amp; vendor messages</div></span></span>
+        <span class="chev">›</span>
+      </div>
+      <div class="setrow" onclick="show('branding')">
+        <span class="sl"><span class="sic">🏷️</span><span><div class="stitle">Company &amp; branding</div><div class="sdesc">Logo &amp; name on exported work orders</div></span></span>
+        <span class="chev">›</span>
+      </div>
+      <div class="setrow" onclick="show('notif')">
+        <span class="sl"><span class="sic">🔔</span><span><div class="stitle">Notifications</div><div class="sdesc">Alerts when vendors complete work</div></span></span>
+        <span class="chev">›</span>
+      </div>
+      <div class="setrow" onclick="toast('Manage users &amp; roles')">
+        <span class="sl"><span class="sic">👤</span><span><div class="stitle">Users &amp; roles</div><div class="sdesc">PMs, assistants, construction managers</div></span></span>
+        <span class="chev">›</span>
+      </div>
+      <div class="setrow" onclick="toast('Milestone defaults')">
+        <span class="sl"><span class="sic">🗓</span><span><div class="stitle">Milestone templates</div><div class="sdesc">Pre-con, orientation, walkthroughs, closing</div></span></span>
+        <span class="chev">›</span>
+      </div>
+    </div>
+    <div class="bottomnav">
+      <button onclick="show('dash')"><span class="ni">▦</span><span class="nl">Homes</span></button>
+      <button onclick="openVendors()"><span class="ni">👷</span><span class="nl">Vendors</span></button>
+      <button onclick="show('dash');setTimeout(function(){document.querySelectorAll('.switch button').forEach(function(b,i){b.classList.toggle('on',i===2)});document.querySelectorAll('.dview').forEach(function(v){v.style.display='none'});document.getElementById('v-schedule').style.display='block'},10)"><span class="ni">🗓</span><span class="nl">Schedule</span></button>
+      <button class="on"><span class="ni">⚙︎</span><span class="nl">Settings</span></button>
+    </div>
+  </div>
+
+  <!-- ============ PHASES EDITOR ============ -->
+  <div class="screen" id="phases">
+    <div class="loghead">
+      <div class="backrow"><button class="iconbtn" onclick="show('settings')">‹</button><span style="font-family:'Space Mono';font-size:11px;color:rgba(255,255,255,.6)">COMMUNITY 04</span><span style="width:36px"></span></div>
+      <h2>Construction phases</h2>
+      <div style="font-size:12.5px;color:rgba(255,255,255,.6);margin-top:6px">Set the stages every home moves through. Different builds need different counts — start from a template, then tailor it.</div>
+    </div>
+    <div class="preset-row">
+      <div class="preset" onclick="loadPreset('production',this)"><div class="pn">Production</div><div class="pc">5 phases</div></div>
+      <div class="preset on" onclick="loadPreset('standard',this)"><div class="pn">Standard</div><div class="pc">9 phases</div></div>
+      <div class="preset" onclick="loadPreset('custom',this)"><div class="pn">Custom</div><div class="pc">12 phases</div></div>
+    </div>
+    <div class="phaselist" id="phaselist"></div>
+    <div class="footaction"><button class="btn primary" onclick="show('settings');toast('Phases saved for Community 04')">Save phases</button></div>
+  </div>
+
+  <!-- ============ TRADE TYPES EDITOR ============ -->
+  <div class="screen" id="trades-editor">
+    <div class="loghead">
+      <div class="backrow"><button class="iconbtn" onclick="show('settings')">‹</button><span style="font-family:'Space Mono';font-size:11px;color:rgba(255,255,255,.6)">COMMUNITY 04</span><span style="width:36px"></span></div>
+      <h2>Trade types</h2>
+      <div style="font-size:12.5px;color:rgba(255,255,255,.6);margin-top:6px">The trades you assign punch items to. Add the ones your crews use; remove the ones you don't.</div>
+    </div>
+    <div class="phaselist" id="tradelist"></div>
+    <div class="footaction"><button class="btn primary" onclick="show('settings');toast('Trade list saved')">Save trades</button></div>
+  </div>
+
+  <!-- ============ NOTIFICATIONS ============ -->
+  <div class="screen" id="notif">
+    <div class="loghead">
+      <div class="backrow"><button class="iconbtn" onclick="show('settings')">‹</button><span style="width:36px"></span><span style="width:36px"></span></div>
+      <h2>Notifications</h2>
+    </div>
+    <div class="setlist" style="padding-top:18px">
+      <div class="setrow" onclick="event.stopPropagation()"><span class="sl"><span class="sic">✅</span><span><div class="stitle">Vendor marks work complete</div><div class="sdesc">Get notified the moment a trade finishes</div></span></span><span class="toggle on" onclick="toggleSwitch(this)"><span class="knob"></span></span></div>
+      <div class="setrow" onclick="event.stopPropagation()"><span class="sl"><span class="sic">💬</span><span><div class="stitle">Vendor adds a note</div><div class="sdesc">e.g. "couldn't finish, needs primer"</div></span></span><span class="toggle on" onclick="toggleSwitch(this)"><span class="knob"></span></span></div>
+      <div class="setrow" onclick="event.stopPropagation()"><span class="sl"><span class="sic">🗓</span><span><div class="stitle">Upcoming milestones</div><div class="sdesc">Walkthroughs &amp; closings within 48 hrs</div></span></span><span class="toggle on" onclick="toggleSwitch(this)"><span class="knob"></span></span></div>
+      <div class="setrow" onclick="event.stopPropagation()"><span class="sl"><span class="sic">⏰</span><span><div class="stitle">Stale open items</div><div class="sdesc">Items open longer than 7 days</div></span></span><span class="toggle" onclick="toggleSwitch(this)"><span class="knob"></span></span></div>
+      <div class="setrow" onclick="event.stopPropagation()"><span class="sl"><span class="sic">📧</span><span><div class="stitle">Daily summary email</div><div class="sdesc">Morning recap of each home's status</div></span></span><span class="toggle" onclick="toggleSwitch(this)"><span class="knob"></span></span></div>
+    </div>
+  </div>
+
+  <!-- ============ COMPANY / BRANDING ============ -->
+  <div class="screen" id="branding">
+    <div class="loghead">
+      <div class="backrow"><button class="iconbtn" onclick="show('settings')">‹</button><span style="width:36px"></span><span style="width:36px"></span></div>
+      <h2>Company &amp; branding</h2>
+      <div style="font-size:12.5px;color:rgba(255,255,255,.6);margin-top:6px">Appears on the PDF &amp; Excel work orders you send to vendors.</div>
+    </div>
+    <div style="padding:18px 20px 100px">
+      <div class="field"><label>Company name</label><input class="input" value="Maple Ridge Builders"></div>
+      <div class="field"><label>Logo</label>
+        <div class="photoadd" onclick="toast('Upload company logo')">🏗️ &nbsp;Tap to upload your logo</div>
+      </div>
+      <div class="field"><label>Brand accent on exports</label>
+        <div style="display:flex;gap:10px">
+          <span style="width:40px;height:40px;border-radius:10px;background:var(--brass);border:2px solid var(--ink)"></span>
+          <span style="width:40px;height:40px;border-radius:10px;background:var(--steel);cursor:pointer"></span>
+          <span style="width:40px;height:40px;border-radius:10px;background:var(--green);cursor:pointer"></span>
+          <span style="width:40px;height:40px;border-radius:10px;background:#5C6470;cursor:pointer"></span>
+          <span style="width:40px;height:40px;border-radius:10px;background:#7A57C9;cursor:pointer"></span>
+        </div>
+      </div>
+      <div class="field"><label>Footer line on work orders</label><input class="input" value="Questions? Call the office at (704) 555-0100"></div>
+    </div>
+    <div class="footaction"><button class="btn primary" onclick="show('settings');toast('Branding saved')">Save</button></div>
+  </div>
+
+  <div class="overlay" id="langoverlay" onclick="if(event.target.id==='langoverlay')closeLang()">
+    <div class="sheet">
+      <h3>Language</h3>
+      <p>Used across the field app and the messages sent to vendors and crews.</p>
+      <div id="langlist" style="margin-top:14px"></div>
+      <button class="btn ghost" style="margin-top:6px" onclick="closeLang()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"><span class="ok">✓</span><span id="toasttext">Saved</span></div>
+  <div class="overlay" id="overlay" onclick="if(event.target.id==='overlay')closeSheet()">
+    <div class="sheet">
+      <h3>Send work order</h3>
+      <p id="sendto">Send this trade's punch list with photos — they get it instantly, no app needed.</p>
+      <div class="sendopt">
+        <button onclick="closeSheet();toast('Opening your phone\'s share sheet…')"><span class="si">📲</span>Share<br>(phone)</button>
+        <button onclick="closeSheet();toast('PDF texted with photos')"><span class="si">💬</span>Auto-text</button>
+        <button onclick="closeSheet();toast('Emailed PDF + photos')"><span class="si">✉️</span>Auto-email</button>
+        <button onclick="closeSheet();toast('Excel sheet exported')"><span class="si">📊</span>Excel</button>
+      </div>
+      <p style="font-size:11.5px;color:var(--mute);margin-top:10px">Share uses your phone's own Messages/Mail — free. Auto-text &amp; auto-email send on their own (needs a messaging plan).</p>
+      <button class="btn ghost" style="margin-top:10px" onclick="closeSheet()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="phaseoverlay" onclick="if(event.target.id==='phaseoverlay')closePhase()">
+    <div class="sheet">
+      <h3>Move this home's phase</h3>
+      <p>Lot 47 · 1420 Maple Ridge Dr</p>
+      <div id="pickerlist" style="margin-top:14px;max-height:340px;overflow-y:auto"></div>
+      <button class="btn ghost" style="margin-top:8px" onclick="closePhase()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function show(id){
+    document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+    var el=document.getElementById(id);el.classList.add('active');el.scrollTop=0;
+    var sb=document.querySelector('.statusbar');
+  }
+  function setView(e,id){
+    document.querySelectorAll('.switch button').forEach(function(b){b.classList.remove('on');});
+    e.target.classList.add('on');
+    document.querySelectorAll('.dview').forEach(function(v){v.style.display='none';});
+    document.getElementById(id).style.display='block';
+  }
+  function dtab(e,id){
+    document.querySelectorAll('.tabbar button').forEach(function(b){b.classList.remove('on');});
+    e.target.classList.add('on');
+    document.querySelectorAll('.dpanel').forEach(function(p){p.classList.remove('on');});
+    document.getElementById(id).classList.add('on');
+  }
+  function openHome(){show('home');document.querySelectorAll('.tabbar button').forEach(function(b,i){b.classList.toggle('on',i===0);});document.querySelectorAll('.dpanel').forEach(function(p,i){p.classList.toggle('on',i===0);});}
+  function openLog(){show('log');}
+  function openTrade(){show('trade');}
+  function openVendors(){show('vendors');}
+  function openVendor(name,trade,emoji,bg){
+    document.getElementById('vd-name').textContent=name;
+    document.getElementById('vd-trade').textContent=trade;
+    var b=document.getElementById('vd-badge');b.textContent=emoji;b.style.background=bg;
+    show('vendor');
+  }
+  function toggleDone(el){el.classList.toggle('done');}
+  function addItem(){toast('Item saved — add the next');}
+  function openSend(name){document.getElementById('sendto').textContent='Sending to '+name+' — punch list + photos, no app needed on their end.';document.getElementById('overlay').classList.add('show');}
+  function closeSheet(){document.getElementById('overlay').classList.remove('show');}
+  var tt;
+  function toast(msg){clearTimeout(tt);document.getElementById('toasttext').innerHTML=msg;var t=document.getElementById('toast');t.classList.add('show');tt=setTimeout(function(){t.classList.remove('show');},2400);}
+
+  /* ---------- PHASE MODEL ---------- */
+  var PRESETS={
+    production:['Pre-Construction','Foundation','Framing','Finishes','Closing'],
+    standard:['Pre-Construction','Foundation','Framing','Rough-In (MEP)','Drywall','Trim','Paint','Final / Closeout','Closing'],
+    custom:['Lot Prep','Pre-Construction','Foundation','Framing','Roofing','Rough-In (MEP)','Insulation','Drywall','Trim','Paint','Final / Closeout','Closing']
+  };
+  function phaseColor(name){
+    var n=name.toLowerCase();
+    if(n.indexOf('clos')>-1) return '#2F8F5B';
+    if(n.indexOf('final')>-1) return '#2F8F5B';
+    if(n.indexOf('paint')>-1) return '#7A57C9';
+    if(n.indexOf('trim')>-1) return '#B5852F';
+    if(n.indexOf('drywall')>-1||n.indexOf('insul')>-1) return '#7A57C9';
+    if(n.indexOf('fram')>-1||n.indexOf('rough')>-1||n.indexOf('roof')>-1||n.indexOf('mep')>-1) return '#2C5C84';
+    return '#5C6470';
+  }
+  var phases = PRESETS.standard.slice();
+  var homePhaseIndex = 5; // Trim, for Lot 47
+
+  function renderPhaseEditor(){
+    var box=document.getElementById('phaselist');box.innerHTML='';
+    phases.forEach(function(p,i){
+      var row=document.createElement('div');row.className='phaserow';
+      row.innerHTML='<span class="order">'+(i+1)+'</span>'+
+        '<span class="pdot" style="background:'+phaseColor(p)+'"></span>'+
+        '<span class="pname">'+p+'</span>'+
+        '<span class="pctrl">'+
+          '<button class="pbtn" onclick="movePhase('+i+',-1)">↑</button>'+
+          '<button class="pbtn" onclick="movePhase('+i+',1)">↓</button>'+
+          '<button class="pbtn del" onclick="deletePhase('+i+')">✕</button>'+
+        '</span>';
+      box.appendChild(row);
+    });
+    var add=document.createElement('button');add.className='addphase';add.textContent='+ Add a phase';
+    add.onclick=addPhase;box.appendChild(add);
+    document.getElementById('set-phasecount').textContent=phases.length+' phases · applies to this community';
+  }
+  function movePhase(i,dir){var j=i+dir;if(j<0||j>=phases.length)return;var t=phases[i];phases[i]=phases[j];phases[j]=t;renderPhaseEditor();}
+  function deletePhase(i){if(phases.length<=2){toast('Keep at least 2 phases');return;}phases.splice(i,1);renderPhaseEditor();}
+  function addPhase(){var name=prompt('New phase name:');if(name&&name.trim()){phases.push(name.trim());renderPhaseEditor();}}
+  function loadPreset(key,el){
+    phases=PRESETS[key].slice();
+    document.querySelectorAll('.preset').forEach(function(p){p.classList.remove('on');});
+    el.classList.add('on');
+    renderPhaseEditor();
+  }
+
+  /* ---------- HOME PHASE TRACK + PICKER ---------- */
+  function renderHomeStage(){
+    var track=document.getElementById('home-track');track.innerHTML='';
+    phases.forEach(function(p,i){
+      var s=document.createElement('div');s.className='seg'+(i<homePhaseIndex?' done':(i===homePhaseIndex?' now':''));
+      track.appendChild(s);
+    });
+    var cur=phases[homePhaseIndex]||phases[phases.length-1];
+    document.getElementById('home-stage').innerHTML='● '+cur+' stage <span style="font-size:11px;color:rgba(255,255,255,.5)">▾ change</span>';
+    var nxt=phases[homePhaseIndex+1];
+    document.getElementById('home-stagenext').innerHTML = nxt ? ('Next: '+nxt) : 'Final phase';
+  }
+  function openPhasePicker(){
+    var list=document.getElementById('pickerlist');list.innerHTML='';
+    phases.forEach(function(p,i){
+      var row=document.createElement('div');row.className='pickrow'+(i===homePhaseIndex?' sel':'');
+      row.innerHTML='<span class="pdot" style="background:'+phaseColor(p)+'"></span><span class="nm">'+p+'</span><span class="rad">'+(i===homePhaseIndex?'✓':'')+'</span>';
+      row.onclick=function(){homePhaseIndex=i;renderHomeStage();closePhase();toast('Moved to '+p);};
+      list.appendChild(row);
+    });
+    document.getElementById('phaseoverlay').classList.add('show');
+  }
+  function closePhase(){document.getElementById('phaseoverlay').classList.remove('show');}
+
+  renderPhaseEditor();
+  renderHomeStage();
+
+  /* ---------- DARK MODE ---------- */
+  function toggleDark(el){
+    el.classList.toggle('on');
+    document.querySelector('.phone').classList.toggle('dark');
+  }
+  /* ---------- generic toggles ---------- */
+  function toggleSwitch(el){el.classList.toggle('on');}
+
+  /* ---------- TRADE TYPES EDITOR ---------- */
+  var trades=['Paint','Trim','Drywall','Tile','Plumbing','Electrical','HVAC','Cleaning'];
+  var tradeIcons={Paint:'🖌️',Trim:'🪚',Drywall:'🧱',Tile:'🚿',Plumbing:'🔧',Electrical:'⚡',HVAC:'❄️',Cleaning:'🧹',Masonry:'🧱',Framing:'🔨',Roofing:'🏠',Landscape:'🌳',Insulation:'🧊',Flooring:'🪵',Foundation:'⬜'};
+  function renderTradeEditor(){
+    var box=document.getElementById('tradelist');if(!box)return;box.innerHTML='';
+    trades.forEach(function(t,i){
+      var row=document.createElement('div');row.className='phaserow';
+      row.innerHTML='<span class="pdot" style="background:transparent;font-size:16px;width:auto">'+(tradeIcons[t]||'🧰')+'</span>'+
+        '<span class="pname">'+t+'</span>'+
+        '<span class="pctrl"><button class="pbtn" onclick="moveTrade('+i+',-1)">↑</button>'+
+        '<button class="pbtn" onclick="moveTrade('+i+',1)">↓</button>'+
+        '<button class="pbtn del" onclick="deleteTrade('+i+')">✕</button></span>';
+      box.appendChild(row);
+    });
+    var add=document.createElement('button');add.className='addphase';add.textContent='+ Add a trade';add.onclick=addTrade;box.appendChild(add);
+    var c=document.getElementById('set-tradecount');if(c)c.textContent=trades.length+' trades · used when logging punch items';
+  }
+  function moveTrade(i,d){var j=i+d;if(j<0||j>=trades.length)return;var t=trades[i];trades[i]=trades[j];trades[j]=t;renderTradeEditor();}
+  function deleteTrade(i){if(trades.length<=1){toast('Keep at least 1 trade');return;}trades.splice(i,1);renderTradeEditor();}
+  function addTrade(){var n=prompt('New trade name:');if(n&&n.trim()){trades.push(n.trim());renderTradeEditor();}}
+  renderTradeEditor();
+
+  /* ---------- LANGUAGE ---------- */
+  var languages=[['English','🇺🇸'],['Español','🇲🇽'],['Português','🇧🇷'],['Kreyòl Ayisyen','🇭🇹'],['Polski','🇵🇱']];
+  var currentLang='English';
+  function openLang(){
+    var box=document.getElementById('langlist');box.innerHTML='';
+    languages.forEach(function(l){
+      var row=document.createElement('div');row.className='langopt'+(l[0]===currentLang?' sel':'');
+      row.innerHTML='<span><span class="lflag">'+l[1]+'</span>'+l[0]+'</span>'+(l[0]===currentLang?'<span style="color:var(--brass);font-weight:700">✓</span>':'');
+      row.onclick=function(){currentLang=l[0];document.getElementById('set-lang').textContent=l[0]+' · for field crews &amp; vendor messages';closeLang();toast('Language set to '+l[0]);};
+      box.appendChild(row);
+    });
+    document.getElementById('langoverlay').classList.add('show');
+  }
+  function closeLang(){document.getElementById('langoverlay').classList.remove('show');}
+
+  /* ---------- PUNCH FILTER ---------- */
+  function filterPunch(e,status){
+    document.querySelectorAll('.filterseg button').forEach(function(b){b.classList.remove('on');});
+    e.target.classList.add('on');
+    document.querySelectorAll('#d-punch .pitem').forEach(function(it){
+      var match = (status==='all') || (it.getAttribute('data-status')===status);
+      it.style.display = match ? 'flex' : 'none';
+    });
+    document.querySelectorAll('#d-punch .pgroup').forEach(function(g){
+      var anyVisible=Array.prototype.some.call(g.querySelectorAll('.pitem'),function(it){return it.style.display!=='none';});
+      g.style.display = anyVisible ? 'block' : 'none';
+    });
+  }
+  /* ---------- NOTES ---------- */
+  function addNote(){
+    var inp=document.getElementById('noteText');var txt=inp.value.trim();if(!txt)return;
+    var card=document.createElement('div');card.className='notecard';
+    card.innerHTML='<div class="nmeta"><span class="nwho">Marcus T.</span><span class="nwhen">Just now</span></div><div class="ntext">'+txt.replace(/</g,'&lt;')+'</div>';
+    var list=document.getElementById('notelist');list.insertBefore(card,list.firstChild);
+    inp.value='';toast('Note added to this home');
+  }
+</script>
+</body>
+</html>
