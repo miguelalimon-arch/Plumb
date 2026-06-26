@@ -371,17 +371,28 @@
   .ob .obscroll{flex:1;overflow-y:auto;padding:30px 28px 28px;display:flex;flex-direction:column;}
   .ob .obscroll::-webkit-scrollbar{display:none;}
   #welcome{background:var(--shell);}
-  #welcome .glow{position:absolute;top:-90px;left:50%;transform:translateX(-50%);width:360px;height:360px;background:radial-gradient(circle,rgba(181,133,47,.3),transparent 70%);pointer-events:none;}
-  .ob-logo{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:36px;position:relative;z-index:2;}
+  #welcome .glow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:380px;height:380px;background:radial-gradient(circle,rgba(181,133,47,.32),transparent 68%);pointer-events:none;}
+  .ob-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;position:relative;z-index:2;}
+  .ob-logo{display:flex;flex-direction:column;align-items:center;gap:20px;position:relative;z-index:2;}
   .ob-logo .wordmark{font-size:50px;color:#fff;}
   .ob-logo .tagline{font-family:'Space Mono';font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);}
-  .ob-blurb{color:rgba(255,255,255,.6);font-size:14px;line-height:1.55;text-align:center;margin:18px auto 0;max-width:280px;position:relative;z-index:2;}
+  .ob-blurb{color:rgba(255,255,255,.55);font-size:13.5px;line-height:1.6;text-align:center;margin:26px auto 0;max-width:260px;position:relative;z-index:2;}
   .ob-cta{margin-top:auto;display:flex;flex-direction:column;gap:11px;position:relative;z-index:2;padding-top:30px;}
   .ob-btn{border:none;border-radius:14px;padding:17px;font-family:'Archivo';font-weight:800;font-size:16px;cursor:pointer;}
   .ob-btn.brass{background:var(--brass);color:var(--on-accent);box-shadow:0 8px 22px rgba(181,133,47,.4);}
   .ob-btn.outline{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);color:#fff;}
   .ob-links{display:flex;justify-content:center;gap:22px;margin-top:18px;}
   .ob-links a{color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:none;}
+  /* welcome floating action bar */
+  .ob-floatwrap{margin-top:0;position:relative;z-index:2;}
+  .ob-minilinks{display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:14px;}
+  .ob-minilinks a{color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:none;}
+  .ob-minilinks span{color:rgba(255,255,255,.25);font-size:11px;}
+  .ob-floatbar{display:flex;gap:9px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);
+    border-radius:18px;padding:9px;box-shadow:0 12px 34px rgba(0,0,0,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+  .ob-floatbar button{flex:1;border:none;border-radius:13px;padding:15px 10px;font-family:'Archivo';font-weight:800;font-size:14.5px;cursor:pointer;}
+  .fb-primary{background:var(--brass);color:var(--on-accent);box-shadow:0 6px 16px rgba(181,133,47,.35);}
+  .fb-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.22);}
   .ob-back{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;display:grid;place-items:center;cursor:pointer;font-size:17px;}
   .ob h2{font-family:'Archivo';font-weight:800;font-size:27px;margin:18px 0 4px;}
   .ob .obsub{color:rgba(255,255,255,.6);font-size:13.5px;line-height:1.5;}
@@ -466,18 +477,22 @@
   <div class="screen active ob" id="welcome">
     <div class="glow"></div>
     <div class="obscroll">
-      <div class="ob-logo">
-        <svg class="cmark logo-hero" style="width:72px;height:62px"><use href="#logomark"/></svg>
-        <div style="text-align:center">
-          <div class="wordmark" style="font-size:40px;letter-spacing:-.01em">Closeout<span style="color:var(--brass)">HQ</span></div>
-          <div style="font-family:'Space Mono';font-size:11px;letter-spacing:.26em;color:var(--brass);text-transform:uppercase;margin-top:4px">Homes By Faircroft</div>
+      <div class="ob-hero">
+        <div class="ob-logo">
+          <svg class="cmark logo-hero" style="width:78px;height:67px"><use href="#logomark"/></svg>
+          <div style="text-align:center">
+            <div class="wordmark" style="font-size:42px;letter-spacing:-.01em">Closeout<span style="color:var(--brass)">HQ</span></div>
+            <div style="font-family:'Space Mono';font-size:10.5px;letter-spacing:.28em;color:var(--brass);text-transform:uppercase;margin-top:7px">Homes By Faircroft</div>
+          </div>
         </div>
+        <p class="ob-blurb">Punch lists, build phases, and vendor handoffs — all from your phone, on site.</p>
       </div>
-      <p class="ob-blurb">CloseoutHQ is the Homes By Faircroft field app — punch lists, build phases, and vendor handoffs, all from your phone on site.</p>
-      <div class="ob-cta">
-        <button class="ob-btn brass" onclick="show('signup')">Get started</button>
-        <button class="ob-btn outline" onclick="setData('sample');show('login')">Sign in</button>
-        <div class="ob-links"><a onclick="show('about')">About</a><a onclick="show('howto')">How it works</a><a onclick="setData('sample');show('dash')">Explore demo</a></div>
+      <div class="ob-floatwrap">
+        <div class="ob-minilinks"><a onclick="setData('sample');show('login')">Sign in</a><span>·</span><a onclick="setData('sample');show('dash')">Explore demo</a><span>·</span><a onclick="show('about')">About</a></div>
+        <div class="ob-floatbar">
+          <button class="fb-primary" onclick="show('signup')">Create account</button>
+          <button class="fb-ghost" onclick="show('howto')">How it works</button>
+        </div>
       </div>
     </div>
   </div>
