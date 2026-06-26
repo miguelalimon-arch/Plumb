@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Plumb — Builder Field App</title>
+<title>CloseoutHQ — Homes By Faircroft</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -366,6 +366,54 @@
   .commit{display:inline-flex;align-items:center;gap:6px;background:var(--steel-soft);color:var(--steel);
     font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;margin-top:10px;}
 
+  /* ---------- ONBOARDING (welcome / signup / about / howto) ---------- */
+  .ob{padding:0;color:#fff;background:var(--shell);display:flex;flex-direction:column;}
+  .ob .obscroll{flex:1;overflow-y:auto;padding:30px 28px 28px;display:flex;flex-direction:column;}
+  .ob .obscroll::-webkit-scrollbar{display:none;}
+  #welcome{background:var(--shell);}
+  #welcome .glow{position:absolute;top:-90px;left:50%;transform:translateX(-50%);width:360px;height:360px;background:radial-gradient(circle,rgba(181,133,47,.3),transparent 70%);pointer-events:none;}
+  .ob-logo{display:flex;flex-direction:column;align-items:center;gap:18px;margin-top:36px;position:relative;z-index:2;}
+  .ob-logo .wordmark{font-size:50px;color:#fff;}
+  .ob-logo .tagline{font-family:'Space Mono';font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--brass);}
+  .ob-blurb{color:rgba(255,255,255,.6);font-size:14px;line-height:1.55;text-align:center;margin:18px auto 0;max-width:280px;position:relative;z-index:2;}
+  .ob-cta{margin-top:auto;display:flex;flex-direction:column;gap:11px;position:relative;z-index:2;padding-top:30px;}
+  .ob-btn{border:none;border-radius:14px;padding:17px;font-family:'Archivo';font-weight:800;font-size:16px;cursor:pointer;}
+  .ob-btn.brass{background:var(--brass);color:var(--on-accent);box-shadow:0 8px 22px rgba(181,133,47,.4);}
+  .ob-btn.outline{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);color:#fff;}
+  .ob-links{display:flex;justify-content:center;gap:22px;margin-top:18px;}
+  .ob-links a{color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:none;}
+  .ob-back{width:36px;height:36px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;display:grid;place-items:center;cursor:pointer;font-size:17px;}
+  .ob h2{font-family:'Archivo';font-weight:800;font-size:27px;margin:18px 0 4px;}
+  .ob .obsub{color:rgba(255,255,255,.6);font-size:13.5px;line-height:1.5;}
+  .ob-field{margin-top:16px;}
+  .ob-field label{font-family:'Space Mono';font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55);display:block;margin-bottom:7px;}
+  .ob-field input{width:100%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);border-radius:12px;padding:14px;font-size:15px;color:#fff;font-family:'Inter';}
+  .ob-field input::placeholder{color:rgba(255,255,255,.4);}
+  .ob-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:15px;padding:16px;margin-top:12px;display:flex;gap:14px;align-items:flex-start;}
+  .ob-card .num{width:30px;height:30px;flex:0 0 30px;border-radius:9px;background:var(--brass);color:var(--on-accent);display:grid;place-items:center;font-family:'Archivo';font-weight:800;font-size:14px;}
+  .ob-card .ct{font-family:'Archivo';font-weight:700;font-size:15px;}
+  .ob-card .cd{font-size:12.5px;color:rgba(255,255,255,.6);margin-top:3px;line-height:1.45;}
+  .ob-section-t{font-family:'Archivo';font-weight:800;font-size:18px;margin:22px 0 4px;}
+  .ob-p{font-size:13.5px;color:rgba(255,255,255,.68);line-height:1.6;margin-top:8px;}
+
+  /* ---------- TRADE LOCK / UNLOCK ---------- */
+  .tradepick{width:100%;border:1.5px dashed var(--brass);background:var(--brass-soft);border-radius:13px;padding:15px;
+    display:flex;align-items:center;justify-content:space-between;cursor:pointer;color:var(--brass-deep);font-weight:700;font-size:14.5px;font-family:'Archivo';}
+  .lockcard.unlockable{cursor:default;}
+  .lockbtn{font-size:11px;font-weight:700;color:var(--brass-deep);background:rgba(181,133,47,.15);border:1px solid var(--brass);
+    padding:6px 11px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+  .logdisabled{opacity:.4;pointer-events:none;}
+
+  /* ---------- EMPTY STATES ---------- */
+  .empty{padding:60px 30px;text-align:center;}
+  .empty .ei{font-size:42px;opacity:.5;}
+  .empty h3{font-family:'Archivo';font-weight:800;font-size:19px;margin-top:14px;}
+  .empty p{font-size:13.5px;color:var(--slate);margin-top:8px;line-height:1.5;}
+  .empty .eb{margin-top:18px;display:inline-block;background:var(--brass);color:var(--on-accent);border:none;border-radius:13px;padding:14px 22px;font-family:'Archivo';font-weight:700;font-size:14.5px;cursor:pointer;}
+
+  /* danger button */
+  .btn.danger{background:var(--red-soft);color:var(--red);border:1px solid #E7B6AF;}
+
   /* ---------- VENDORS ---------- */
   .vsearch{padding:0 20px 6px;}
   .vsearch input{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px 12px 38px;font-size:14px;font-family:'Inter';
@@ -410,21 +458,87 @@
 </head>
 <body>
 <div class="phone">
+  <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true"><symbol id="logomark" viewBox="0 0 370 319"><path d="M0 0 C2.29 1.14 2.29 1.14 4.48 2.6 C5.32 3.14 6.16 3.69 7.03 4.25 C7.93 4.85 8.82 5.45 9.75 6.06 C11.72 7.34 13.69 8.62 15.66 9.9 C16.69 10.57 17.73 11.25 18.79 11.94 C24.2 15.42 29.7 18.77 35.19 22.12 C42.66 26.7 50.11 31.3 57.5 36 C64.96 40.74 72.47 45.38 80 50 C88.28 55.08 96.53 60.21 104.74 65.42 C112.56 70.38 120.47 75.22 128.36 80.06 C135.77 84.61 143.13 89.23 150.47 93.89 C157.57 98.39 164.77 102.71 172 107 C172 118.22 172 129.44 172 141 C168.31 141 166.98 139.97 163.86 138.03 C163.34 137.7 163.34 137.7 160.71 136.07 C159.58 135.36 158.45 134.65 157.31 133.94 C156.14 133.21 154.97 132.48 153.79 131.75 C150.78 129.87 147.76 127.98 144.75 126.1 C142.06 124.41 139.37 122.73 136.68 121.05 C132.69 118.57 128.71 116.08 124.73 113.58 C119.33 110.2 113.92 106.85 108.5 103.5 C99.96 98.22 91.45 92.91 82.94 87.59 C76.47 83.54 69.99 79.51 63.5 75.5 C54.97 70.23 46.47 64.92 37.97 59.6 C30.35 54.84 22.72 50.09 15.05 45.38 C11.46 43.18 7.9 40.96 4.43 38.57 C3.46 37.91 2.49 37.24 1.5 36.56 C0.73 36.01 -0.05 35.45 -0.84 34.88 C-3 34 -3 34 -5.32 34.76 C-8.03 36.01 -10.48 37.42 -13 39.02 C-13.96 39.62 -14.92 40.23 -15.9 40.85 C-16.42 41.17 -16.42 41.17 -19 42.81 C-21.18 44.18 -23.35 45.56 -25.53 46.93 C-26.62 47.61 -27.71 48.3 -28.84 49.01 C-33.38 51.86 -37.94 54.68 -42.5 57.5 C-51.03 62.77 -59.54 68.08 -68.04 73.4 C-75.54 78.09 -83.06 82.76 -90.59 87.41 C-94.67 89.93 -98.74 92.46 -102.79 95.03 C-103.17 95.27 -103.17 95.27 -105.05 96.46 C-106.44 97.34 -107.82 98.22 -109.21 99.11 C-113.78 102 -113.78 102 -116 102 C-116 163.05 -116 224.1 -116 287 C-72.44 287 -28.88 287 16 287 C16 238.49 16 189.98 16 140 C25.57 140 35.14 140 45 140 C45 198.41 45 256.82 45 317 C-18.03 317 -81.06 317 -146 317 C-146 252.65 -146 188.3 -146 122 C-172 138 -172 138 -178 142 C-178.66 142 -179.32 142 -180 142 C-180 130.78 -180 119.56 -180 108 C-168.76 100.13 -168.76 100.13 -164.66 97.68 C-163.75 97.13 -162.84 96.58 -161.91 96.02 C-160.97 95.45 -160.03 94.89 -159.06 94.31 C-151.58 89.8 -144.13 85.24 -136.75 80.56 C-135.97 80.07 -135.2 79.58 -134.4 79.07 C-131.07 76.96 -127.75 74.84 -124.45 72.7 C-123.46 72.06 -122.46 71.41 -121.44 70.75 C-120.61 70.21 -119.78 69.67 -118.93 69.11 C-117 68 -117 68 -115 68 C-115 52.16 -115 36.32 -115 20 C-101.47 20 -87.94 20 -74 20 C-73.84 23.46 -73.84 23.46 -73 41 C-70.36 39.33 -67.72 37.66 -65 35.94 C-56.45 30.53 -47.89 25.15 -39.3 19.82 C-33.95 16.49 -28.63 13.12 -23.35 9.68 C-22.26 8.98 -21.18 8.28 -20.06 7.56 C-17.98 6.21 -15.91 4.86 -13.84 3.48 C-13.37 3.18 -13.37 3.18 -10.99 1.66 C-10.58 1.39 -10.58 1.39 -8.5 0.03 C-5.22 -1.32 -3.39 -0.95 0 0 Z " fill="currentColor" transform="translate(189,2)"/><path d="M0 0 C24.42 0 48.84 0 74 0 C74 9.57 74 19.14 74 29 C64.5 29.02 55 29.04 45.5 29.05 C41.09 29.06 36.68 29.06 32.26 29.08 C28.01 29.09 23.76 29.09 19.5 29.09 C17.88 29.1 16.25 29.1 14.63 29.11 C12.35 29.11 10.08 29.11 7.81 29.11 C7.17 29.11 7.17 29.11 3.89 29.12 C1 29 1 29 0 28 C0 18.76 0 9.52 0 0 Z " fill="currentColor" transform="translate(246,143)"/><path d="M0 0 C21.12 0 42.24 0 64 0 C64 9.57 64 19.14 64 29 C42.88 29 21.76 29 0 29 C0 19.43 0 9.86 0 0 Z " fill="currentColor" transform="translate(246,212)"/></symbol></svg>
+
 
   <!-- ============ LOGIN / SPLASH ============ -->
-  <div class="screen active" id="login">
+  <!-- ============ WELCOME ============ -->
+  <div class="screen active ob" id="welcome">
+    <div class="glow"></div>
+    <div class="obscroll">
+      <div class="ob-logo">
+        <svg class="cmark logo-hero" style="width:72px;height:62px"><use href="#logomark"/></svg>
+        <div style="text-align:center">
+          <div class="wordmark" style="font-size:40px;letter-spacing:-.01em">Closeout<span style="color:var(--brass)">HQ</span></div>
+          <div style="font-family:'Space Mono';font-size:11px;letter-spacing:.26em;color:var(--brass);text-transform:uppercase;margin-top:4px">Homes By Faircroft</div>
+        </div>
+      </div>
+      <p class="ob-blurb">CloseoutHQ is the Homes By Faircroft field app — punch lists, build phases, and vendor handoffs, all from your phone on site.</p>
+      <div class="ob-cta">
+        <button class="ob-btn brass" onclick="show('signup')">Get started</button>
+        <button class="ob-btn outline" onclick="setData('sample');show('login')">Sign in</button>
+        <div class="ob-links"><a onclick="show('about')">About</a><a onclick="show('howto')">How it works</a><a onclick="setData('sample');show('dash')">Explore demo</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SIGN UP ============ -->
+  <div class="screen ob" id="signup">
+    <div class="obscroll">
+      <div class="backrow"><button class="ob-back" onclick="show('welcome')">‹</button><span style="width:36px"></span></div>
+      <h2>Create your account</h2>
+      <div class="obsub">Start with one community — you can add more later.</div>
+      <div class="ob-field"><label>Your name</label><input placeholder="Marcus Tate"></div>
+      <div class="ob-field"><label>Company</label><input placeholder="Maple Ridge Builders"></div>
+      <div class="ob-field"><label>Community / development</label><input placeholder="Maple Ridge — Community 04"></div>
+      <div class="ob-field"><label>Work email</label><input placeholder="you@company.com" type="email"></div>
+      <div class="ob-field"><label>Password</label><input placeholder="Create a password" type="password"></div>
+      <div class="ob-cta" style="padding-top:22px">
+        <button class="ob-btn brass" onclick="setData('empty');show('howto')">Create account</button>
+        <div class="ob-links"><a onclick="show('login')">I already have an account</a></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ABOUT ============ -->
+  <div class="screen ob" id="about">
+    <div class="obscroll">
+      <div class="backrow"><button class="ob-back" onclick="show('welcome')">‹</button><span style="width:36px"></span></div>
+      <h2>About CloseoutHQ</h2>
+      <p class="ob-p">CloseoutHQ was built for the people who actually run the job site — project managers, construction managers, and their crews — not for a back office.</p>
+      <div class="ob-section-t">Why it exists</div>
+      <p class="ob-p">Punch lists live on clipboards, in text threads, and in people's heads. Items slip, vendors show up to the wrong work, and nobody's sure what's actually done. It keeps every open item tied to a room, a trade, and a vendor — and gets it to the right person in a format they'll actually open.</p>
+      <div class="ob-section-t">Who it's for</div>
+      <p class="ob-p">Homebuilders managing multiple homes through every phase, from foundation to closing — and the trades who finish them.</p>
+      <div class="ob-section-t">What makes it different</div>
+      <p class="ob-p">Built phone-first for the field. Vendors don't need the app — they get a clean PDF or Excel work order by text or email. And it speaks your crews' languages, not just English.</p>
+      <div class="ob-cta" style="padding-top:18px"><button class="ob-btn brass" onclick="show('welcome')">Back to start</button></div>
+    </div>
+  </div>
+
+  <!-- ============ HOW TO USE ============ -->
+  <div class="screen ob" id="howto">
+    <div class="obscroll">
+      <div class="backrow"><button class="ob-back" onclick="show('welcome')">‹</button><span style="width:36px"></span></div>
+      <h2>How it works</h2>
+      <div class="obsub">Five steps, start to finish.</div>
+      <div class="ob-card"><span class="num">1</span><span><div class="ct">Add your homes</div><div class="cd">Create each address, set its commitment date, and place it in a build phase.</div></span></div>
+      <div class="ob-card"><span class="num">2</span><span><div class="ct">Lock a trade & log items</div><div class="cd">Walking a house for paint? Lock "Paint," then rattle off items by room — they all auto-assign. Unlock to switch trades.</div></span></div>
+      <div class="ob-card"><span class="num">3</span><span><div class="ct">Send the work order</div><div class="cd">Share a PDF or Excel with photos straight from your phone — by text or email. No app needed on their end.</div></span></div>
+      <div class="ob-card"><span class="num">4</span><span><div class="ct">Track completion</div><div class="cd">Vendors mark work done and leave a note if something's held up. You get notified.</div></span></div>
+      <div class="ob-card"><span class="num">5</span><span><div class="ct">Watch the dashboard</div><div class="cd">See every home's phase, open items, milestones, and what needs attention — at a glance.</div></span></div>
+      <div class="ob-cta" style="padding-top:24px"><button class="ob-btn brass" onclick="show('dash')">Go to my dashboard</button></div>
+    </div>
+  </div>
+
+  <!-- ============ COMMUNITY SIGN-IN ============ -->
+  <div class="screen" id="login">
     <div class="glow"></div>
     <div class="logo-stack">
-      <svg class="bob" width="58" height="86" viewBox="0 0 58 86" fill="none">
-        <line x1="29" y1="2" x2="29" y2="26" stroke="#B5852F" stroke-width="2.5" stroke-linecap="round"/>
-        <circle cx="29" cy="29" r="4" stroke="#B5852F" stroke-width="2.5"/>
-        <path d="M29 33 L44 54 L29 84 L14 54 Z" fill="#B5852F"/>
-        <path d="M29 33 L44 54 L29 60 Z" fill="#D9A94E"/>
-        <path d="M29 33 L14 54 L29 60 Z" fill="#9A6F22"/>
-      </svg>
-      <div>
-        <div class="wordmark">Plumb</div>
-        <div class="tagline" style="text-align:center;margin-top:6px">Keep every build true</div>
+      <svg class="cmark bob logo-hero" style="width:60px;height:52px"><use href="#logomark"/></svg>
+      <div style="text-align:center">
+        <div class="wordmark" style="font-size:36px">Closeout<span style="color:var(--brass)">HQ</span></div>
+        <div style="font-family:'Space Mono';font-size:10.5px;letter-spacing:.26em;color:var(--brass);text-transform:uppercase;margin-top:3px">Homes By Faircroft</div>
       </div>
       <div class="grain">Field punch lists, home stages, and vendor handoffs — built for the job site.</div>
 
@@ -434,7 +548,7 @@
           <div><div class="cn">Maple Ridge — Community 04</div><div class="cr">Marcus Tate · Project Manager</div></div>
           <div class="avatar" style="background:var(--brass);color:var(--on-accent)">MT</div>
         </div>
-        <button class="enterbtn" onclick="show('dash')">Enter site</button>
+        <button class="enterbtn" onclick="setData('sample');show('dash')">Enter site</button>
       </div>
     </div>
   </div>
@@ -444,12 +558,8 @@
     <div class="appbar">
       <div class="brandrow">
         <span class="wordmark">
-          <svg width="15" height="24" viewBox="0 0 58 86" fill="none" style="vertical-align:-3px">
-            <line x1="29" y1="2" x2="29" y2="26" stroke="#B5852F" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="29" cy="29" r="4" stroke="#B5852F" stroke-width="3"/>
-            <path d="M29 33 L44 54 L29 84 L14 54 Z" fill="#B5852F"/>
-          </svg>
-          Plumb
+          <svg class="cmark" style="width:26px;height:23px;vertical-align:-6px"><use href="#logomark"/></svg>
+          CloseoutHQ
         </span>
         <div class="avatar">MT</div>
       </div>
@@ -464,7 +574,7 @@
     </div>
 
     <div id="v-portfolio" class="dview">
-      <div class="attn">
+      <div class="attn" id="attnStrip">
         <div class="ah"><span class="ahdot"></span> Needs attention</div>
         <div class="chips">
           <span class="chip crit" onclick="openHome()">Lot 58 closes Fri · 1 item open</span>
@@ -472,12 +582,12 @@
           <span class="chip warn" onclick="openHome()">2 items open 10+ days</span>
         </div>
       </div>
-      <div class="metrics">
-        <div class="metric"><div class="n">5</div><div class="l">Active homes</div></div>
-        <div class="metric alert"><div class="n">13</div><div class="l">Open punch items</div></div>
-        <div class="metric soon"><div class="n">3</div><div class="l">Closings &le; 30d</div></div>
+      <div class="metrics" id="metricStrip">
+        <div class="metric"><div class="n" id="m-homes">5</div><div class="l">Active homes</div></div>
+        <div class="metric alert"><div class="n" id="m-open">13</div><div class="l">Open punch items</div></div>
+        <div class="metric soon"><div class="n" id="m-close">3</div><div class="l">Closings &le; 30d</div></div>
       </div>
-      <div class="listwrap">
+      <div class="listwrap" id="homeList">
         <div class="section-label">// On site</div>
 
         <div class="card" onclick="openHome()">
@@ -533,6 +643,12 @@
           </div>
         </div>
       </div>
+      <div class="empty" id="emptyPortfolio" style="display:none">
+        <div class="ei">🏠</div>
+        <h3>No homes yet</h3>
+        <p>Add your first address to start tracking phases, punch lists, and milestones.</p>
+        <button class="eb" onclick="toast('Add your first home')">＋ Add a home</button>
+      </div>
     </div>
 
     <div id="v-pipeline" class="dview" style="display:none">
@@ -567,6 +683,7 @@
     <div id="v-trades" class="dview" style="display:none">
       <div class="trades">
         <div class="section-label" style="margin-left:0">// Open items by trade — all homes</div>
+        <div class="tradebar"><div class="th"><span class="name"><span class="ic" style="background:var(--steel-soft)">👤</span>Yourself</span><span class="open">3</span></div><div class="meter"><span style="width:34%;background:var(--steel)"></span></div><div class="who">Marcus T. · your own tasks</div></div>
         <div class="tradebar"><div class="th"><span class="name"><span class="ic" style="background:var(--brass-soft)">🖌️</span>Paint</span><span class="open">5</span></div><div class="meter"><span style="width:62%;background:var(--brass)"></span></div><div class="who">Diego's Painting · across 2 homes</div></div>
         <div class="tradebar"><div class="th"><span class="name"><span class="ic" style="background:var(--steel-soft)">🪚</span>Trim</span><span class="open">4</span></div><div class="meter"><span style="width:50%;background:var(--steel)"></span></div><div class="who">Coastal Trim Co · Lot 47</div></div>
         <div class="tradebar"><div class="th"><span class="name"><span class="ic" style="background:var(--green-soft)">🚿</span>Tile</span><span class="open">2</span></div><div class="meter"><span style="width:26%;background:var(--green)"></span></div><div class="who">Sierra Tile · Lot 47</div></div>
@@ -613,6 +730,11 @@
           <button onclick="filterPunch(event,'done')">Done</button>
         </div>
         <button class="bulkbtn" onclick="openSend('all open items for this home')">⇪ Send all open</button>
+      </div>
+      <div class="pgroup">
+        <div class="pgrouphdr"><span class="lft"><span class="ic" style="background:var(--steel-soft)">👤</span><span><span class="tname">Yourself</span><br><span class="assignee">Marcus T. · Project Manager</span></span></span><span style="font-size:10.5px;color:var(--mute);font-family:'Space Mono'">YOUR TASKS</span></div>
+        <div class="pitem" data-status="open"><div class="ph" style="background:linear-gradient(135deg,#cdd2d8,#aeb4bd)"></div><div><span class="loc">Garage</span><div class="desc">Order replacement light fixture — model was backordered</div><span class="st" style="background:var(--amber-soft);color:var(--amber)">Open</span></div></div>
+        <div class="pitem" data-status="open"><div class="ph" style="background:linear-gradient(135deg,#cfd5d6,#a3acad)"></div><div><span class="loc">Whole home</span><div class="desc">Confirm pre-paint walk time with homeowner</div><span class="st" style="background:var(--amber-soft);color:var(--amber)">Open</span></div></div>
       </div>
       <div class="pgroup">
         <div class="pgrouphdr"><span class="lft"><span class="ic" style="background:var(--brass-soft)">🖌️</span><span><span class="tname">Paint</span><br><span class="assignee">Diego's Painting</span></span></span><button class="sendbtn" onclick="openSend('Diego\'s Painting')">⇪ Send</button></div>
@@ -667,19 +789,26 @@
       <h2>Log punch items</h2>
     </div>
     <div class="logbody">
-      <div class="field"><label>Locked trade — items auto-assign here</label>
-        <div class="lockcard"><span class="lc-l"><span class="ic">🖌️</span><span><span class="trade">Paint</span><div class="person">Diego's Painting</div></span></span><span class="lock">🔒 Locked</span></div>
+      <div class="field"><label>Trade for this session</label>
+        <div id="tradeUnlocked">
+          <div class="tradepick" onclick="openTradePick()"><span>＋ Choose a trade to lock</span><span>›</span></div>
+          <div style="font-size:11.5px;color:var(--slate);margin-top:8px">Lock a trade and every item you add gets assigned to it — so you can log a whole house of paint without re-picking.</div>
+        </div>
+        <div id="tradeLocked" style="display:none">
+          <div class="lockcard unlockable"><span class="lc-l"><span class="ic" id="lock-ic">🖌️</span><span><span class="trade" id="lock-trade">Paint</span><div class="person" id="lock-person">Diego's Painting</div></span></span><span class="lockbtn" onclick="unlockTrade()">🔓 Unlock</span></div>
+        </div>
       </div>
-      <div class="field"><label>Room / location</label><input class="input" placeholder="e.g. Master bath"></div>
-      <div class="field"><label>What needs doing</label><textarea class="input" placeholder="Describe the item…"></textarea>
-        <div class="voicehint"><span class="mic">🎙</span> Hold to dictate — hands-free with gloves on</div></div>
-      <div class="field"><label>Photo (optional)</label><div class="photoadd">📷 &nbsp;Tap to add a photo</div></div>
-      <div class="field"><label>Added this visit — 2 items</label>
-        <div class="addedrow"><div><span class="al">Master Bath</span><div class="ad">Touch up trim around window</div></div><span style="color:var(--green);font-size:18px">✓</span></div>
-        <div class="addedrow"><div><span class="al">Kitchen</span><div class="ad">Drywall scuff above sink</div></div><span style="color:var(--green);font-size:18px">✓</span></div>
+      <div id="logFields" class="logdisabled">
+        <div class="field"><label>Room / location</label><input id="logRoom" class="input" placeholder="e.g. Master bath"></div>
+        <div class="field"><label>What needs doing</label><textarea id="logDesc" class="input" placeholder="Describe the item…"></textarea>
+          <div class="voicehint"><span class="mic">🎙</span> Hold to dictate — hands-free with gloves on</div></div>
+        <div class="field"><label>Photo (optional)</label><div class="photoadd" onclick="toast('Camera / photo library')">📷 &nbsp;Tap to add a photo</div></div>
+      </div>
+      <div class="field"><label id="addedLabel">Added this visit — 0 items</label>
+        <div id="addedList"></div>
       </div>
     </div>
-    <div class="footaction"><div class="btnrow"><button class="btn ghost" onclick="addItem()">Save &amp; add another</button><button class="btn primary" onclick="show('home');toast('3 paint items saved to Lot 47')">Done</button></div></div>
+    <div class="footaction"><div class="btnrow"><button class="btn ghost" onclick="addItem()">Save &amp; add another</button><button class="btn primary" onclick="finishLog()">Done</button></div></div>
   </div>
 
   <!-- ============ TRADESMAN ============ -->
@@ -704,12 +833,8 @@
     <div class="appbar">
       <div class="brandrow">
         <span class="wordmark">
-          <svg width="15" height="24" viewBox="0 0 58 86" fill="none" style="vertical-align:-3px">
-            <line x1="29" y1="2" x2="29" y2="26" stroke="#B5852F" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="29" cy="29" r="4" stroke="#B5852F" stroke-width="3"/>
-            <path d="M29 33 L44 54 L29 84 L14 54 Z" fill="#B5852F"/>
-          </svg>
-          Plumb
+          <svg class="cmark" style="width:26px;height:23px;vertical-align:-6px"><use href="#logomark"/></svg>
+          CloseoutHQ
         </span>
         <div class="avatar">MT</div>
       </div>
@@ -763,6 +888,12 @@
         <div class="vactions"><a onclick="toast('Calling Volt Electric')"><span class="em">📞</span>Call</a><a onclick="toast('Texting Volt Electric')"><span class="em">💬</span>Text</a><a onclick="toast('Emailing Volt Electric')"><span class="em">✉️</span>Email</a></div>
       </div>
     </div>
+    <div class="empty" id="emptyVendors" style="display:none">
+      <div class="ei">👷</div>
+      <h3>No vendors yet</h3>
+      <p>Add the trades you work with to assign punch items and send work orders.</p>
+      <button class="eb" onclick="toast('Add your first vendor')">＋ Add a vendor</button>
+    </div>
 
     <button class="fab" onclick="toast('Add a new vendor')">+</button>
     <div class="bottomnav">
@@ -805,12 +936,8 @@
     <div class="appbar">
       <div class="brandrow">
         <span class="wordmark">
-          <svg width="15" height="24" viewBox="0 0 58 86" fill="none" style="vertical-align:-3px">
-            <line x1="29" y1="2" x2="29" y2="26" stroke="#B5852F" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="29" cy="29" r="4" stroke="#B5852F" stroke-width="3"/>
-            <path d="M29 33 L44 54 L29 84 L14 54 Z" fill="#B5852F"/>
-          </svg>
-          Plumb
+          <svg class="cmark" style="width:26px;height:23px;vertical-align:-6px"><use href="#logomark"/></svg>
+          CloseoutHQ
         </span>
         <div class="avatar">MT</div>
       </div>
@@ -850,6 +977,9 @@
         <span class="sl"><span class="sic">🗓</span><span><div class="stitle">Milestone templates</div><div class="sdesc">Pre-con, orientation, walkthroughs, closing</div></span></span>
         <span class="chev">›</span>
       </div>
+      <div class="section-label" style="margin:18px 2px 11px">// Data</div>
+      <button class="btn ghost" style="margin-bottom:10px" onclick="setData('sample');toast('Sample data loaded')">Load sample data</button>
+      <button class="btn danger" onclick="confirmClear()">Clear all data</button>
     </div>
     <div class="bottomnav">
       <button onclick="show('dash')"><span class="ni">▦</span><span class="nl">Homes</span></button>
@@ -936,6 +1066,15 @@
     </div>
   </div>
 
+  <div class="overlay" id="tradeoverlay" onclick="if(event.target.id==='tradeoverlay')closeTradePick()">
+    <div class="sheet">
+      <h3>Lock a trade</h3>
+      <p>Every item you add will auto-assign to this trade and its vendor until you unlock.</p>
+      <div id="tradePickList" style="margin-top:14px;max-height:330px;overflow-y:auto"></div>
+      <button class="btn ghost" style="margin-top:6px" onclick="closeTradePick()">Cancel</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"><span class="ok">✓</span><span id="toasttext">Saved</span></div>
   <div class="overlay" id="overlay" onclick="if(event.target.id==='overlay')closeSheet()">
     <div class="sheet">
@@ -966,6 +1105,7 @@
   function show(id){
     document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
     var el=document.getElementById(id);el.classList.add('active');el.scrollTop=0;
+    if(id==='welcome'||id==='login'){var lm=el.querySelectorAll('.logo-hero');lm.forEach(function(m){m.style.animation='none';void m.offsetWidth;m.style.animation='';});}
     var sb=document.querySelector('.statusbar');
   }
   function setView(e,id){
@@ -981,7 +1121,6 @@
     document.getElementById(id).classList.add('on');
   }
   function openHome(){show('home');document.querySelectorAll('.tabbar button').forEach(function(b,i){b.classList.toggle('on',i===0);});document.querySelectorAll('.dpanel').forEach(function(p,i){p.classList.toggle('on',i===0);});}
-  function openLog(){show('log');}
   function openTrade(){show('trade');}
   function openVendors(){show('vendors');}
   function openVendor(name,trade,emoji,bg){
@@ -991,7 +1130,100 @@
     show('vendor');
   }
   function toggleDone(el){el.classList.toggle('done');}
-  function addItem(){toast('Item saved — add the next');}
+  function addItem(){
+    if(!lockedTrade){toast('Lock a trade first');return;}
+    var room=document.getElementById('logRoom').value.trim();
+    var desc=document.getElementById('logDesc').value.trim();
+    if(!room&&!desc){toast('Add a room or description');return;}
+    var row=document.createElement('div');row.className='addedrow';
+    row.innerHTML='<div><span class="al">'+(room||'—').replace(/</g,'&lt;')+'</span><div class="ad">'+(desc||'(no description)').replace(/</g,'&lt;')+'</div></div><span style="color:var(--green);font-size:18px">✓</span>';
+    var list=document.getElementById('addedList');list.appendChild(row);
+    addedCount++;document.getElementById('addedLabel').textContent='Added this visit — '+addedCount+(addedCount===1?' item':' items');
+    document.getElementById('logRoom').value='';document.getElementById('logDesc').value='';
+    document.getElementById('logRoom').focus();
+    toast('Item saved — add the next');
+  }
+  function finishLog(){
+    if(addedCount===0){toast('No items added yet');return;}
+    var who = (lockedTrade==='Self') ? 'your own' : lockedTrade;
+    show('home');toast(addedCount+' '+who+' item'+(addedCount===1?'':'s')+' saved');
+  }
+
+  /* ---------- TRADE LOCK / UNLOCK ---------- */
+  var lockedTrade=null, addedCount=0;
+  var pmName='Marcus T.', pmRole='Project Manager';
+  var tradeVendors={Paint:"Diego's Painting",Trim:'Coastal Trim Co',Tile:'Sierra Tile',Plumbing:'Apex Plumbing',Electrical:'Volt Electric',Drywall:'—',HVAC:'—',Cleaning:'—'};
+  function openLog(){
+    // reset the session each time you open logging
+    lockedTrade=null;addedCount=0;
+    document.getElementById('addedList').innerHTML='';
+    document.getElementById('addedLabel').textContent='Added this visit — 0 items';
+    document.getElementById('logRoom').value='';document.getElementById('logDesc').value='';
+    document.getElementById('tradeLocked').style.display='none';
+    document.getElementById('tradeUnlocked').style.display='block';
+    document.getElementById('logFields').classList.add('logdisabled');
+    show('log');
+  }
+  function openTradePick(){
+    var box=document.getElementById('tradePickList');box.innerHTML='';
+    // Self / PM option first — items you'll handle yourself, not a vendor
+    var self=document.createElement('div');self.className='pickrow';
+    self.innerHTML='<span class="pdot" style="background:transparent;font-size:16px;width:auto">👤</span><span class="nm">Myself<div style="font-size:11px;color:var(--slate);font-weight:400">'+pmName+' · '+pmRole+'</div></span><span class="rad"></span>';
+    self.onclick=function(){lockTrade('Self');};
+    box.appendChild(self);
+    var div=document.createElement('div');div.style.cssText='height:1px;background:var(--line);margin:4px 2px 8px';box.appendChild(div);
+    trades.forEach(function(t){
+      var row=document.createElement('div');row.className='pickrow';
+      var v=tradeVendors[t]||'—';
+      row.innerHTML='<span class="pdot" style="background:transparent;font-size:16px;width:auto">'+(tradeIcons[t]||'🧰')+'</span><span class="nm">'+t+'<div style="font-size:11px;color:var(--slate);font-weight:400">'+v+'</div></span><span class="rad"></span>';
+      row.onclick=function(){lockTrade(t);};
+      box.appendChild(row);
+    });
+    document.getElementById('tradeoverlay').classList.add('show');
+  }
+  function closeTradePick(){document.getElementById('tradeoverlay').classList.remove('show');}
+  function lockTrade(t){
+    lockedTrade=t;
+    var isSelf = (t==='Self');
+    document.getElementById('lock-ic').textContent= isSelf ? '👤' : (tradeIcons[t]||'🧰');
+    document.getElementById('lock-trade').textContent= isSelf ? 'Myself' : t;
+    document.getElementById('lock-person').textContent= isSelf ? (pmName+' · '+pmRole) : (tradeVendors[t]||'Assign a vendor');
+    document.getElementById('tradeUnlocked').style.display='none';
+    document.getElementById('tradeLocked').style.display='block';
+    document.getElementById('logFields').classList.remove('logdisabled');
+    closeTradePick();toast(isSelf ? 'Locked to you — log your tasks' : (t+' locked — log away'));
+  }
+  function unlockTrade(){
+    lockedTrade=null;
+    document.getElementById('tradeLocked').style.display='none';
+    document.getElementById('tradeUnlocked').style.display='block';
+    document.getElementById('logFields').classList.add('logdisabled');
+    toast('Trade unlocked — pick another');
+  }
+
+  /* ---------- DATA: sample vs empty, and clear ---------- */
+  function setData(mode){
+    var empty = (mode==='empty');
+    ['attnStrip','metricStrip','homeList'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display=empty?'none':'';});
+    var ep=document.getElementById('emptyPortfolio');if(ep)ep.style.display=empty?'block':'none';
+    // secondary tab demo content
+    var pipe=document.querySelector('#v-pipeline .pipe');if(pipe)pipe.style.display=empty?'none':'';
+    var sched=document.querySelector('#v-schedule .sched');if(sched)sched.style.display=empty?'none':'';
+    var trd=document.querySelector('#v-trades .trades');if(trd)trd.style.display=empty?'none':'';
+    var vl=document.querySelector('#vendors .vlist');if(vl)vl.style.display=empty?'none':'';
+    var ve=document.getElementById('emptyVendors');if(ve)ve.style.display=empty?'block':'none';
+    if(empty){document.getElementById('m-homes').textContent='0';document.getElementById('m-open').textContent='0';document.getElementById('m-close').textContent='0';}
+    else{document.getElementById('m-homes').textContent='5';document.getElementById('m-open').textContent='13';document.getElementById('m-close').textContent='3';}
+  }
+  function confirmClear(){
+    if(confirm('Clear all data? This removes every home, punch item, vendor, and note. (In the prototype this just empties the demo.)')){
+      setData('empty');
+      // also clear logging + notes session state
+      lockedTrade=null;addedCount=0;
+      toast('All data cleared');
+      show('dash');
+    }
+  }
   function openSend(name){document.getElementById('sendto').textContent='Sending to '+name+' — punch list + photos, no app needed on their end.';document.getElementById('overlay').classList.add('show');}
   function closeSheet(){document.getElementById('overlay').classList.remove('show');}
   var tt;
